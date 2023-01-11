@@ -42,6 +42,12 @@ async function run(){
             res.send(result);
         });
 
+        app.get('/course/:id', async (req, res) => {
+            const query = req.params.id;
+            const result = await coursesCollection.findOne(query);
+            res.send(result);
+        });
+
         app.get('/blogs', async (req, res) => {
             const query = {};
             const result = await blogsCollection.find(query).toArray();
@@ -56,7 +62,7 @@ async function run(){
         // })
 
     }
-    
+
     finally{
 
     }

@@ -1,18 +1,16 @@
 [
     {
-        "image": "https://che.org.il/wp-content/uploads/2019/12/shutterstock_602226047.jpg",
-        "title": "Talk english fluently",
-        "date": "2023-01-11 - 11:09PM",
-        "author": "Tech Barner",
-        "age": "neutral",
-        "details": "With hip-hop music and style as its core themes, the ESl Hip Hop blog makes learning fun. This is an ESL blog that is powerfully entertaining and educational."
+        "picture":"https://i.ytimg.com/vi/iwfNNO1uHew/maxresdefault.jpg",
+        "title":"Academic writing",
+        "details":"Academic writing is a formal style of writing used in universities and scholarly publications. You'll encounter it in journal articles and books on academic topics, and you'll be expected to write your essays, research papers, and dissertation in academic style.",
+        "price":"5100","offer-price":"2500",
+        "date": "2023-01-11 - 11:47PM"
     },
     {
-        "image": "https://assets.thehansindia.com/h-upload/2020/12/26/1020898-thinking-smart.webp",
-        "title": "Smart Thinking",
-        "date": "2023-01-11 - 11:20PM",
-        "author": "Brave Carly",
-        "age": "neutral",
-        "details": "When you understand how the mind works, you can think smarter—and act smarter. Based on the precepts of cognitive science and drawing on a half century of interdisciplinary studies, Smart Thinking is"
+        "picture":"https://www.totaljobs.com/advice/wp-content/uploads/most-common-interview-questions.jpg",
+        "title":"Prepare for a job interview in English",
+        "details":"Job interviews are usually stressful, and a job interview in English can be doubly so. It's worth taking the time to prepare for your job interview in English more thoroughly than you might prepare for a regular job interview (although you should be prepared for those too!), just so that you can feel more comfortable on the big day.",
+        "price":"8500","offer-price":"6200",
+        "date": "2023-01-11 - 11:54PM"
     }
 ]
