@@ -1,6 +1,6 @@
 const express = require('express')
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const app = express()
 
@@ -13,7 +13,6 @@ app.use(express.json())
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.6ke0m0t.mongodb.net/?retryWrites=true&w=majority`;
-console.log(uri)
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 // function verifyJWT(req, res, next){
@@ -43,7 +42,8 @@ async function run(){
         });
 
         app.get('/course/:id', async (req, res) => {
-            const query = req.params.id;
+            const id = req.params.id;
+            const query = { _id: ObjectId(id)}
             const result = await coursesCollection.findOne(query);
             res.send(result);
         });
@@ -52,6 +52,13 @@ async function run(){
             const query = {};
             const result = await blogsCollection.find(query).toArray();
             res.send(result);
+        })
+
+        app.get('/blogs/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id)}
+            const result = await blogsCollection.findOne(query);
+            res.send(result)
         })
 
         
