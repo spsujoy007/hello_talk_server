@@ -12,7 +12,8 @@ app.use(cors())
 app.use(express.json())
 
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORd}@cluster0.6ke0m0t.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.6ke0m0t.mongodb.net/?retryWrites=true&w=majority`;
+console.log(uri)
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 // function verifyJWT(req, res, next){
@@ -32,11 +33,18 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 async function run(){
     try{
-        const coursesCollection = client.db('hello-Talk').collection('coursesCollection')
+        const coursesCollection = client.db('hello-Talk').collection('coursesCollection');
+        const blogsCollection = client.db('hello-Talk').collection('blogsCollection');
         //get courses data from mongodb
         app.get('/courses', async (req, res) => {
             const query = {};
             const result = await coursesCollection.find(query).toArray();
+            res.send(result);
+        });
+
+        app.get('/blogs', async (req, res) => {
+            const query = {};
+            const result = await blogsCollection.find(query).toArray();
             res.send(result);
         })
 
@@ -48,6 +56,7 @@ async function run(){
         // })
 
     }
+    
     finally{
 
     }
