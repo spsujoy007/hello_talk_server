@@ -36,6 +36,8 @@ async function run(){
         const coursesCollection = client.db('hello-Talk').collection('coursesCollection');
         const blogsCollection = client.db('hello-Talk').collection('blogsCollection');
         const usersCollection = client.db('hello-Talk').collection('usersCollection');
+        const reviewsCollection = client.db('hello-Talk').collection('reviewCollection');
+
 
         //get courses data from mongodb
         app.get('/courses', async (req, res) => {
@@ -70,6 +72,20 @@ async function run(){
             res.send(result)
         })
 
+        //post review in database
+        app.post('/postreview', async(req, res) => {
+            const review = req.body;
+            const result = await reviewsCollection.insertOne(review);
+            res.send(result)
+        })
+
+        //get the review api from mongodb
+        app.get('/reviews', async(req, res) => {
+            const query = {};
+            const result = await reviewsCollection.find(query).toArray();
+            res.send(result);
+        })
+
         //get user details from signup
         app.post('/user', async (req, res) => {
             const user = req.query.userbio
@@ -83,6 +99,8 @@ async function run(){
         //     res.send({token});
         // })
 
+
+        //authentication
         app.put('/user/:email', async (req, res) => {
             const email = req.params.email;
             console.log(email);
