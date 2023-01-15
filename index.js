@@ -13,6 +13,8 @@ app.use(cors())
 app.use(express.json())
 
 
+// const levels = require('/data/course.json');
+
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.6ke0m0t.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
@@ -37,6 +39,7 @@ async function run(){
         const blogsCollection = client.db('hello-Talk').collection('blogsCollection');
         const usersCollection = client.db('hello-Talk').collection('usersCollection');
         const reviewsCollection = client.db('hello-Talk').collection('reviewCollection');
+        const quizCollection = client.db('hello-Talk').collection('quizCollection');
 
 
         //get courses data from mongodb
@@ -84,6 +87,13 @@ async function run(){
             const query = {};
             const result = await reviewsCollection.find(query).toArray();
             res.send(result);
+        });
+
+        app.get('/quizes', async(req, res) => {
+            // const levels = levels;
+            const query = {};
+            const result = await quizCollection.find(query).toArray();
+            res.send(result)
         })
 
         //get user details from signup
