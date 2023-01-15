@@ -39,7 +39,8 @@ async function run(){
         const blogsCollection = client.db('hello-Talk').collection('blogsCollection');
         const usersCollection = client.db('hello-Talk').collection('usersCollection');
         const reviewsCollection = client.db('hello-Talk').collection('reviewCollection');
-        const quizCollection = client.db('hello-Talk').collection('quizCollection');
+        const YquizCollection = client.db('hello-Talk').collection('YquizCollection');
+        const AquizCollection = client.db('hello-Talk').collection('AquizCollection');
 
 
         //get courses data from mongodb
@@ -89,11 +90,23 @@ async function run(){
             res.send(result);
         });
 
+        //get quizzes api - checking age
         app.get('/quizes', async(req, res) => {
-            // const levels = levels;
+            const age = req.query.age
             const query = {};
-            const result = await quizCollection.find(query).toArray();
-            res.send(result)
+            if(age === 'young'){
+                const result = await YquizCollection.find(query).toArray();
+                res.send(result)
+            }
+            if(age === 'adult'){   
+                const result = await AquizCollection.find(query).toArray();
+                res.send(result)
+            }
+            else{
+                const result = {message: "No data found"}
+                res.send(result)
+            }
+
         })
 
         //get user details from signup
