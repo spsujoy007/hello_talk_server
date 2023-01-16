@@ -4,8 +4,9 @@
         "lessons": [
             {
                 "id": 1,
-                "level": [
+                "levels": [
                     {
+                        "level": 1,
                         "question": [
                             {
                                 "id": 1,
@@ -21,13 +22,13 @@
                         ]
                     },
                     {
-                        "id": 2,
                         "level": 2,
+                        "id": 2,
                         "story": "Emotions are mental states brought on by neurophysiological changes, variously associated with thoughts, feelings, behavioral responses, and a degree of pleasure or displeasure."
                     },
                     {
-                        "id": 3,
                         "level": 3,
+                        "id": 3,
                         "question": [
                             {
                                 "id": 1,
@@ -48,37 +49,54 @@
 
     }
 ]
-,
 
 [
-{
-        "age": "adult",
+    {
+        "age": "young",
         "lessons": [
             {
                 "id": 1,
-                "level": [
+                "levels": [
                     {
+                        "level": 1,
                         "question": [
                             {
                                 "id": 1,
                                 "question_no": 1,
-                                "question": "'ডাক্তার'-এর অনুবাদ কী হবে",
+                                "question": "Do you know what is love?",
                                 "options": [
-                                    {"opt_1": "Doctor"},
-                                    {"opt_2": "Children"},
-                                    {"opt_3": "Father"}
+                                    {"opt_1": "Love is an emotion"},
+                                    {"opt_2": "Love is feel"},
+                                    {"opt_3": "Love is just friendship"}
                                 ],
-                                "answer": "Doctor"
+                                "answer": "Love is an emotion"
+                            }
+                        ]
+                    },
+                    {
+                        "level": 2,
+                        "id": 2,
+                        "story": "Emotions are mental states brought on by neurophysiological changes, variously associated with thoughts, feelings, behavioral responses, and a degree of pleasure or displeasure."
+                    },
+                    {
+                        "level": 3,
+                        "id": 3,
+                        "question": [
+                            {
+                                "id": 1,
+                                "question_no": 1,
+                                "question": "বিখ্যাত-এর অনুবাদ কী হবে?",
+                                "options": [
+                                    {"opt_1": "Fashion"},
+                                    {"opt_2": "Famious"},
+                                    {"opt_3": "Freindship"}
+                                ],
+                                "answer": "Famious"
                             }
                         ]
                     }
-                ],
-            },
-            {
-                "id": 2,
-                "level": 2,
-                "story": "Emotions are mental states brought on by neurophysiological changes, variously associated with thoughts, feelings, behavioral responses, and a degree of pleasure or displeasure."
-            }
+                ]
+            } 
         ]
 
     }

@@ -106,14 +106,13 @@ async function run(){
                 const result = {message: "No data found"}
                 res.send(result)
             }
-
         })
 
         //get user details from signup
-        app.post('/user', async (req, res) => {
-            const user = req.query.userbio
-            console.log(user);
-        })
+        // app.post('/user', async (req, res) => {
+        //     const user = req.query.userbio
+        //     res.send(user)
+        // })
 
         // app.post('/jwt', (req, res) => {
         //     const user = req.quer;
@@ -137,6 +136,12 @@ async function run(){
             const result = await usersCollection.updateOne(filter, updateDoc, options);
             const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN, { expiresIn: '1h' });
             res.send({ result, token });
+        })
+
+        app.get('/users', async(req, res) => {
+            const query = {};
+            const result = await usersCollection.find(query).toArray();
+            res.send(result) 
         })
 
     }
