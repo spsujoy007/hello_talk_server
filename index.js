@@ -41,6 +41,7 @@ async function run(){
         const reviewsCollection = client.db('hello-Talk').collection('reviewCollection');
         const YquizCollection = client.db('hello-Talk').collection('YquizCollection');
         const AquizCollection = client.db('hello-Talk').collection('AquizCollection');
+        const faqCollection = client.db('hello-Talk').collection('faqCollection');
 
 
         //get courses data from mongodb
@@ -89,6 +90,12 @@ async function run(){
             const result = await reviewsCollection.find(query).toArray();
             res.send(result);
         });
+
+        app.get('/faq', async ( req, res) => {
+            const query = {};
+            const result = await faqCollection.find(query).toArray();
+            res.send(result)
+        })
 
         //get quizzes api - checking age
         app.get('/quizes', async(req, res) => {

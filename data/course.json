@@ -1,10 +1,8 @@
 [
     {
         "age": "young",
-        "lessons": [
-            {
-                "id": 1,
-                "levels": [
+        "id": 1,
+        "levels": [
                     {
                         "level": 1,
                         "question": [
@@ -45,18 +43,13 @@
                     }
                 ]
             } 
-        ]
-
-    }
 ]
 
 [
     {
         "age": "young",
-        "lessons": [
-            {
-                "id": 1,
-                "levels": [
+        "id": 1,
+        "levels": [
                     {
                         "level": 1,
                         "question": [
@@ -97,7 +90,4 @@
                     }
                 ]
             } 
-        ]
-
-    }
 ]
