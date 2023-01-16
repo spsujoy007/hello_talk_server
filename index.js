@@ -42,6 +42,7 @@ async function run(){
         const YquizCollection = client.db('hello-Talk').collection('YquizCollection');
         const AquizCollection = client.db('hello-Talk').collection('AquizCollection');
         const faqCollection = client.db('hello-Talk').collection('faqCollection');
+        const flashcardCollection = client.db('hello-Talk').collection('flashcardCollection');
 
 
         //get courses data from mongodb
@@ -91,9 +92,17 @@ async function run(){
             res.send(result);
         });
 
+        //frequently asked question 
         app.get('/faq', async ( req, res) => {
             const query = {};
             const result = await faqCollection.find(query).toArray();
+            res.send(result)
+        })
+
+        //flashcardCollection 
+        app.get('/flashcard', async (req, res) => {
+            const query = {}; 
+            const result = await flashcardCollection.find(query).toArray();
             res.send(result)
         })
 
@@ -113,6 +122,16 @@ async function run(){
                 const result = {message: "No data found"}
                 res.send(result)
             }
+        })
+        
+        app.get('/quizes/:id', async (req, res) => {
+            // const id = req.params.level;
+            // const query = {};
+            // const quizes = await AquizCollection.find(query).toArray();
+            // const levels = quizes.map(i => i.levels);
+            // const singlelevel = levels.map(i => i)
+            // console.log(singlelevel);
+            // res.send(result)
         })
 
         //get user details from signup
