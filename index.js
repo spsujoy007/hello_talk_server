@@ -4,6 +4,7 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const jwt = require('jsonwebtoken');
 require('dotenv').config()
 const app = express()
+const stripe = require("stripe")("sk_test_51M7c2bCrl3dQ57EJMOlipKJpX43py1TqYR0wIuxSuUqrCNs5wm5ZZqbdfoC9Sg4pPnoRjyK555NERoxbngBBbRhS00TlyNUFoE");
 
 //port of the server
 const port = process.env.PORT || 5000;
@@ -16,26 +17,27 @@ app.use(express.json())
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.6ke0m0t.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
-function verifyJWT(req, res, next){
+function verifyJWT(req, res, next) {
     const authHeader = req.headers.authorization;
-    if(!authHeader){
-        return res.status(401).send({message: "unathorized access"})
+    if (!authHeader) {
+        return res.status(401).send({ message: "unathorized access" })
     }
     const token = authHeader.split(' ')[1];
-    jwt.verify(token, process.env.ACCESS_TOKEN, function(err, decoded){
-        if(err){
-            return res.status(401).send({message: "unathorized access"})
+    jwt.verify(token, process.env.ACCESS_TOKEN, function (err, decoded) {
+        if (err) {
+            return res.status(401).send({ message: "unathorized access" })
         }
         req.decoded = decoded;
         next()
     })
 }
 
-async function run(){
-    try{
+async function run() {
+    try {
         const coursesCollection = client.db('hello-Talk').collection('coursesCollection');
         const blogsCollection = client.db('hello-Talk').collection('blogsCollection');
         const usersCollection = client.db('hello-Talk').collection('usersCollection');
+        const paymentsCollection = client.db('hello-Talk').collection('paymentsCollection');
 
         //get courses data from mongodb
         app.get('/courses', async (req, res) => {
@@ -46,7 +48,7 @@ async function run(){
 
         app.get('/course/:id', async (req, res) => {
             const id = req.params.id;
-            const query = { _id: ObjectId(id)}
+            const query = { _id: ObjectId(id) }
             const result = await coursesCollection.findOne(query);
             res.send(result);
         });
@@ -65,7 +67,7 @@ async function run(){
 
         app.get('/blogs/:id', async (req, res) => {
             const id = req.params.id;
-            const query = { _id: ObjectId(id)};
+            const query = { _id: ObjectId(id) };
             const result = await blogsCollection.findOne(query);
             res.send(result)
         })
@@ -98,9 +100,38 @@ async function run(){
             res.send({ result, token });
         })
 
+        // -------------------Stripe-------------
+        app.post('/create-payment-intent', async (req, res) => {
+            const order = req.body;
+            const price = order.price;
+            const amount = price;
+
+            const paymentIntent = await stripe.paymentIntents.create({
+                currency: 'usd',
+                amount: amount,
+                "payment_method_types": [
+                    "card"
+                ]
+            });
+            res.send({
+                clientSecret: paymentIntent.client_secret,
+            });
+        });
+
+        app.post("/payments", async (req, res) => {
+            const payments = req.body
+            console.log(payments)
+            const result = await paymentsCollection.insertOne(payments)
+            res.send(result);
+
+        });
+
+
+        //-----------------stripe end---------------
+
     }
 
-    finally{
+    finally {
 
     }
 }
@@ -109,7 +140,7 @@ run().catch(err => {
 })
 
 app.get('/', (req, res) => {
-  res.send(`
+    res.send(`
     <p>
         <h1>Welcome to Hello_talk Server 🎉</h1>
         <h3>Let's do it</h3>
@@ -117,8 +148,10 @@ app.get('/', (req, res) => {
   `)
 })
 
+
+
 app.listen(port, () => {
-  console.log(`Hello talk app listening on port ${port}`)
+    console.log(`Hello talk app listening on port ${port}`)
 })
 
 //Export the express api
