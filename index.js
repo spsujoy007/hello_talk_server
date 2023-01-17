@@ -38,7 +38,7 @@ async function run(){
         const coursesCollection = client.db('hello-Talk').collection('coursesCollection');
         const blogsCollection = client.db('hello-Talk').collection('blogsCollection');
         const usersCollection = client.db('hello-Talk').collection('usersCollection');
-        const reviewsCollection = client.db('hello-Talk').collection('reviewCollection');
+        const reviewsCollection = client.db('hello-Talk').collection('reviewsCollection');
         const YquizCollection = client.db('hello-Talk').collection('YquizCollection');
         const AquizCollection = client.db('hello-Talk').collection('AquizCollection');
         const faqCollection = client.db('hello-Talk').collection('faqCollection');
@@ -59,25 +59,29 @@ async function run(){
             res.send(result);
         });
 
-        //___________________all blog apis CRUD oparation start_________________
+        //\___________________all blog apis CRUD oparation start_________________/\\
+        //post blog api
         app.post('/blog', async(req, res) => {
             const blog = req.body;
             const result = await blogsCollection.insertOne(blog)
             res.send(result)
         })
 
+        //get all blogs
         app.get('/blogs', async (req, res) => {
             const query = {};
             const result = await blogsCollection.find(query).toArray();
             res.send(result);
         })
 
+        //two blogs api for show in home page
         app.get('/hblogs', async (req, res) => {
             const query = {};
             const result = await blogsCollection.find(query).limit(2).toArray();
             res.send(result);
         })
 
+        //get the single blog
         app.get('/blogs/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id)};
@@ -86,13 +90,13 @@ async function run(){
         })
 
         //delete blog 
-        app.delete('/blog/:id', async(req, res) => {
+        app.delete('/blogs/:id', async(req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id)}
             const result = await blogsCollection.deleteOne(query);
             res.send(result)
         })
-        //__________________________blogs end______________________________
+        //\__________________________blogs end______________________________/\\
 
         //post review in database
         app.post('/postreview', async(req, res) => {
@@ -107,6 +111,19 @@ async function run(){
             const result = await reviewsCollection.find(query).toArray();
             res.send(result);
         });
+
+        //get single review of indecated user
+        app.get('/review', async(req, res) => {
+            const reqemail = req.query.email;
+            const query = {email: reqemail}
+            if(reqemail){
+                const result = await reviewsCollection.findOne(query);
+                res.send(result)
+            }
+            else{
+                const error = {message: "no email found"}
+            }
+        })
 
         //frequently asked question 
         app.get('/faq', async ( req, res) => {
