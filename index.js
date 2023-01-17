@@ -59,6 +59,13 @@ async function run(){
             res.send(result);
         });
 
+        //all blog apis CRUD oparation start
+        app.post('/blog', async(req, res) => {
+            const blog = req.body;
+            const result = await blogsCollection.insertOne(blog)
+            res.send(result)
+        })
+        
         app.get('/blogs', async (req, res) => {
             const query = {};
             const result = await blogsCollection.find(query).toArray();
@@ -77,6 +84,7 @@ async function run(){
             const result = await blogsCollection.findOne(query);
             res.send(result)
         })
+        //blogs end
 
         //post review in database
         app.post('/postreview', async(req, res) => {
@@ -133,19 +141,6 @@ async function run(){
             // console.log(singlelevel);
             // res.send(result)
         })
-
-        //get user details from signup
-        // app.post('/user', async (req, res) => {
-        //     const user = req.query.userbio
-        //     res.send(user)
-        // })
-
-        // app.post('/jwt', (req, res) => {
-        //     const user = req.quer;
-        //     console.log(user)
-        //     const token = jwt.sign(user, process.env.ACCESS_TOKEN, {expiredIn: '1h'});
-        //     res.send({token});
-        // })
 
 
         //authentication
