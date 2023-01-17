@@ -59,13 +59,13 @@ async function run(){
             res.send(result);
         });
 
-        //all blog apis CRUD oparation start
+        //___________________all blog apis CRUD oparation start_________________
         app.post('/blog', async(req, res) => {
             const blog = req.body;
             const result = await blogsCollection.insertOne(blog)
             res.send(result)
         })
-        
+
         app.get('/blogs', async (req, res) => {
             const query = {};
             const result = await blogsCollection.find(query).toArray();
@@ -84,7 +84,15 @@ async function run(){
             const result = await blogsCollection.findOne(query);
             res.send(result)
         })
-        //blogs end
+
+        //delete blog 
+        app.delete('/blog/:id', async(req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id)}
+            const result = await blogsCollection.deleteOne(query);
+            res.send(result)
+        })
+        //__________________________blogs end______________________________
 
         //post review in database
         app.post('/postreview', async(req, res) => {
