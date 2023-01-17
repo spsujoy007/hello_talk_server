@@ -36,6 +36,7 @@ function verifyJWT(req, res, next){
 async function run(){
     try{
         const coursesCollection = client.db('hello-Talk').collection('coursesCollection');
+        const levelsCollcetion = client.db('hello-Talk').collection('levelsCollcetion');
         const blogsCollection = client.db('hello-Talk').collection('blogsCollection');
         const usersCollection = client.db('hello-Talk').collection('usersCollection');
         const reviewsCollection = client.db('hello-Talk').collection('reviewsCollection');
@@ -157,14 +158,27 @@ async function run(){
             }
         })
         
-        app.get('/quizes/:id', async (req, res) => {
-            // const id = req.params.level;
-            // const query = {};
-            // const quizes = await AquizCollection.find(query).toArray();
-            // const levels = quizes.map(i => i.levels);
-            // const singlelevel = levels.map(i => i)
-            // console.log(singlelevel);
-            // res.send(result)
+        app.get('/levels', async (req, res) => {
+            const query = {};
+            const result = await levelsCollcetion.find(query).toArray()
+            console.log(result)
+            res.send(result)
+        })
+
+        app.get('/levels/:level', async (req, res) => {
+            const level = req.params.level;
+            const query = {level: level};
+            const result = await levelsCollcetion.find(query).toArray()
+            console.log(result)
+            res.send(result)
+        })
+
+        app.get('/level/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)};
+            const result = await levelsCollcetion.findOne(query)
+            console.log(result)
+            res.send(result)
         })
 
 
