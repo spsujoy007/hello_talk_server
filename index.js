@@ -39,6 +39,7 @@ async function run(){
         const levelsCollcetion = client.db('hello-Talk').collection('levelsCollcetion');
         const blogsCollection = client.db('hello-Talk').collection('blogsCollection');
         const usersCollection = client.db('hello-Talk').collection('usersCollection');
+        const userCollection = client.db('hello-Talk').collection('userCollection');
         const reviewsCollection = client.db('hello-Talk').collection('reviewsCollection');
         const YquizCollection = client.db('hello-Talk').collection('YquizCollection');
         const AquizCollection = client.db('hello-Talk').collection('AquizCollection');
@@ -158,6 +159,7 @@ async function run(){
             }
         })
         
+        //get all the levels
         app.get('/levels', async (req, res) => {
             const query = {};
             const result = await levelsCollcetion.find(query).toArray()
@@ -183,7 +185,7 @@ async function run(){
 
 
         //authentication
-        app.put('/user/:email', async (req, res) => {
+        app.put('/users/:email', async (req, res) => {
             const email = req.params.email;
             console.log(email);
             const user = req.body;
@@ -196,6 +198,12 @@ async function run(){
             const result = await usersCollection.updateOne(filter, updateDoc, options);
             const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN, { expiresIn: '1h' });
             res.send({ result, token });
+        })
+
+        app.post('/user', async(req, res) => {
+            const userdetail = req.body;
+            const result = await userCollection.insertOne(userdetail);
+            res.send(result)
         })
 
         app.get('/users', async(req, res) => {
