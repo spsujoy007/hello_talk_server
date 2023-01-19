@@ -206,6 +206,28 @@ async function run(){
             res.send(result)
         })
 
+        app.post('/upuser', async(req, res) => {
+            const userbio = req.body;
+            const {name, age, education, district, country, number, email } = userbio;
+            const useremail = req.query.email;
+            const filter = {email: useremail};
+            const options = {upsert: true}
+            const updateDoc = {
+                $set:{
+                    name,
+                    age,
+                    education,
+                    district, 
+                    country,
+                    number,
+                    email
+                }
+            }
+
+            const result = await userCollection.updateOne(filter, updateDoc, options);
+            res.send(result)
+        })
+
         app.get('/users', async(req, res) => {
             const query = {};
             const result = await usersCollection.find(query).toArray();
