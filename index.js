@@ -249,6 +249,22 @@ async function run(){
             res.send(result) 
         })
 
+
+        //get all the users saved on usercollection
+        app.get('/allusers', async(req, res) => {
+            const query = {};
+            const result = await userCollection.find(query).toArray();
+            res.send(result)
+        })
+
+        //get single user api
+        app.get('/profile', async(req, res) => {
+            const email = req.query.email;
+            const query = {email: email}
+            const result = await userCollection.findOne(query);
+            res.send(result) 
+        })
+
     }
 
     finally{
