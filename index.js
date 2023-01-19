@@ -272,6 +272,19 @@ async function run(){
             res.send(result) 
         })
 
+        app.post('/addgem', (req, res) => {
+            const email = req.query.email;
+            const filter = {email: email};
+            const options = {upsert: true};
+            const updatedDoc= {
+                $set: {
+                    gems: 3
+                }
+            }
+            const result = userCollection.insertOne(filter, updatedDoc, options)
+            res.send(result)
+        })
+
         //delete an user from database
         app.delete('/profile/:id', async(req, res) => {
             const id = req.params.id;
