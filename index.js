@@ -61,6 +61,13 @@ async function run(){
             res.send(result);
         });
 
+        app.delete('/course/:id', async(req, res) => {
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)};
+            const result = await coursesCollection.deleteOne(query)
+            res.send(result);
+        })
+
         //\___________________all blog apis CRUD oparation start_________________/\\
         //post blog api
         app.post('/blog', async(req, res) => {
@@ -258,10 +265,10 @@ async function run(){
         })
 
         //get single user api
-        app.get('/profile', async(req, res) => {
+        app.get('/profile', (req, res) => {
             const email = req.query.email;
             const query = {email: email}
-            const result = await userCollection.findOne(query);
+            const result = userCollection.findOne(query);
             res.send(result) 
         })
 
