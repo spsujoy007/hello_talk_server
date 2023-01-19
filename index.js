@@ -91,6 +91,21 @@ async function run(){
             res.send(result)
         })
 
+        //edit blogs by post
+        app.post('/upblog/:id', async(req, res) => {
+            const id = req.params.id;
+            const blogdata = req.body;
+            const filter = {_id: ObjectId(id)};
+            const options = {upsert: true};
+            const updatedDoc = {
+                $set: {
+                    //update text here work running
+                }
+            }
+            const result = await blogsCollection.updateOne(filter, updatedDoc, options)
+
+        })
+
         //delete blog 
         app.delete('/blogs/:id', async(req, res) => {
             const id = req.params.id;
