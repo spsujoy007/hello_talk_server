@@ -230,7 +230,7 @@ async function run(){
 
         app.post('/upuser', async(req, res) => {
             const userbio = req.body;
-            const {name, age, education, district, country, number, email } = userbio;
+            const {name, age, education, district, country, number, email, realAge } = userbio;
             const useremail = req.query.email;
             const filter = {email: useremail};
             const options = {upsert: true}
@@ -238,6 +238,7 @@ async function run(){
                 $set:{
                     name,
                     age,
+                    realAge,
                     education,
                     district, 
                     country,
@@ -265,22 +266,23 @@ async function run(){
         })
 
         //get single user api
-        app.get('/profile', (req, res) => {
+        app.get('/profile', async (req, res) => {
             const email = req.query.email;
             const query = {email: email}
-            const result = userCollection.findOne(query);
+            const result = await userCollection.findOne(query);
             res.send(result) 
         })
 
         app.post('/addgem', (req, res) => {
             const email = req.query.email;
+            const getgem = req.query.gems;
             const filter = {email: email};
             const options = {upsert: true};
-            const updatedDoc= {
-                $set: {
-                    gems: 3
-                }
-            }
+            // const updatedDoc= {
+            //     $set: {
+            //         gems: 
+            //     }
+            // }
             const result = userCollection.insertOne(filter, updatedDoc, options)
             res.send(result)
         })
