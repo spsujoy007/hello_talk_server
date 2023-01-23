@@ -273,17 +273,25 @@ async function run(){
             res.send(result) 
         })
 
-        app.post('/addgem', (req, res) => {
+        app.post('/addgem', async (req, res) => {
             const email = req.query.email;
-            const getgem = req.query.gems;
+            const mygem = req.body;
+            //get the new gems
+            const {mGem} = mygem
+            
+            //find for get the user of previous gems
+            const getUser = await userCollection.findOne({email: email})
+            const {gems} =  getUser;
+            
             const filter = {email: email};
             const options = {upsert: true};
-            // const updatedDoc= {
-            //     $set: {
-            //         gems: 
-            //     }
-            // }
-            const result = userCollection.insertOne(filter, updatedDoc, options)
+            const updatedDoc= {
+                $set: {
+                    gems: gems + mGem
+                }
+            };
+
+            const result = await userCollection.updateOne(filter, updatedDoc, options)
             res.send(result)
         })
 
