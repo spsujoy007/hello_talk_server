@@ -272,6 +272,19 @@ async function run(){
             const query = {email: email}
             const result = await userCollection.findOne(query);
             res.send(result) 
+        });
+
+        app.put('/makeadmin', async(req, res) => {
+            const email = req.query.email;
+            const filter = {email: email}
+            const options = {upsert: true};
+            const updatedDoc = {
+                $set: {
+                    role: "admin"
+                }
+            }
+            const result = await teachersCollection.updateOne(filter, updatedDoc, options);
+            res.send(result)
         })
 
         //update gems by answering the question
@@ -312,6 +325,14 @@ async function run(){
             const teachers = await teachersCollection.find(query).toArray();
             res.send(teachers)
         })
+
+        //get single teacher
+        app.get('/teacher/:id', async(req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id)};
+            const result = await teachersCollection.findOne(query);
+            res.send(result);
+        });
 
     }
 
