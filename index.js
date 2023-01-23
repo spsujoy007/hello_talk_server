@@ -45,6 +45,7 @@ async function run(){
         const AquizCollection = client.db('hello-Talk').collection('AquizCollection');
         const faqCollection = client.db('hello-Talk').collection('faqCollection');
         const flashcardCollection = client.db('hello-Talk').collection('flashcardCollection');
+        const teachersCollection = client.db('hello-Talk').collection('teachersCollection');
 
 
         //get courses data from mongodb
@@ -273,6 +274,7 @@ async function run(){
             res.send(result) 
         })
 
+        //update gems by answering the question
         app.post('/addgem', async (req, res) => {
             const email = req.query.email;
             const mygem = req.body;
@@ -301,6 +303,14 @@ async function run(){
             const query = {_id: ObjectId(id)};
             const result = await userCollection.deleteOne(query);
             res.send(result);
+        });
+
+
+        //get all the teachers and description
+        app.get('/teachers', async (req, res) => {
+            const query = {};
+            const teachers = await teachersCollection.find(query).toArray();
+            res.send(teachers)
         })
 
     }
