@@ -46,6 +46,7 @@ async function run(){
         const faqCollection = client.db('hello-Talk').collection('faqCollection');
         const flashcardCollection = client.db('hello-Talk').collection('flashcardCollection');
         const teachersCollection = client.db('hello-Talk').collection('teachersCollection');
+        const communityPostsCollection = client.db('hello-Talk').collection('communityPostsCollection');
 
 
         //get courses data from mongodb
@@ -78,6 +79,7 @@ async function run(){
             const result = await coursesCollection.updateOne(filter, updatedDoc, options)
             res.send(result)
         })
+
         app.delete('/course/:id', async(req, res) => {
             const id = req.params.id;
             const query = {_id: ObjectId(id)};
@@ -225,16 +227,25 @@ async function run(){
         //save the level when it complete in userCollection
         app.post('/savelevel', async(req, res) => {
             const newLevel = req.body;
+            const {completed_lv} = newLevel;
             const email = req.query.email;
             const filter = {email: email};
             const options = {upsert: true};
             const updatedDoc = {
                 $push: {
-                    completed_lv: newLevel
+                    completed_lv: completed_lv
                 }
             };
             const result = await userCollection.updateOne(filter, updatedDoc, options) 
             res.send(result)
+        });
+
+        //check levels
+        app.get('/filterlevel', async(req, res) => {
+            const email = req.query.email;
+            const getUser = userCollection.find(user => user.email === email);
+            const completedlv = getUser.completed_lv;
+
         })
 
         //authentication
@@ -367,6 +378,19 @@ async function run(){
             const result = await teachersCollection.findOne(query);
             res.send(result);
         });
+
+        //post method community quesions or others
+        app.post('/addapost', async(req, res) => {
+            const question = req.body;
+            const result = await communityPostsCollection.insertOne(question);
+            res.send(result)
+        });
+
+        app.get('/communityposts', async(req, res) => {
+            const query = {};
+            const result = await communityPostsCollection.find(query).toArray();
+            res.send(result)
+        })
 
     }
 
