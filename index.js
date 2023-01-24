@@ -62,6 +62,22 @@ async function run(){
             res.send(result);
         });
 
+        //update the course
+        app.post('/course', async(req, res) => {
+            const id = req.query.id;
+            const coursedata = req.body;
+            const {picture, title, details, price, date, offer_price} = coursedata;
+
+            const filter = {_id: ObjectId(id)};
+            const options = {upsert: true};
+            const updatedDoc = {
+                $set: {
+                    picture, title, details, price, date, offer_price
+                }
+            }
+            const result = await coursesCollection.updateOne(filter, updatedDoc, options)
+            res.send(result)
+        })
         app.delete('/course/:id', async(req, res) => {
             const id = req.params.id;
             const query = {_id: ObjectId(id)};
@@ -107,7 +123,7 @@ async function run(){
             const options = {upsert: true};
             const updatedDoc = {
                 $set: {
-                    //update text here work running
+
                 }
             }
             const result = await blogsCollection.updateOne(filter, updatedDoc, options)
@@ -206,6 +222,20 @@ async function run(){
             res.send(result)
         })
 
+        //save the level when it complete in userCollection
+        app.post('/savelevel', async(req, res) => {
+            const newLevel = req.body;
+            const email = req.query.email;
+            const filter = {email: email};
+            const options = {upsert: true};
+            const updatedDoc = {
+                $push: {
+                    completed_lv: newLevel
+                }
+            };
+            const result = await userCollection.updateOne(filter, updatedDoc, options) 
+            res.send(result)
+        })
 
         //authentication
         app.put('/users/:email', async (req, res) => {
@@ -223,12 +253,14 @@ async function run(){
             res.send({ result, token });
         })
 
+        //post my profile
         app.post('/user', async(req, res) => {
             const userdetail = req.body;
             const result = await userCollection.insertOne(userdetail);
             res.send(result)
         })
 
+        //update my profile with all information
         app.post('/upuser', async(req, res) => {
             const userbio = req.body;
             const {name, age, education, district, country, number, email, realAge } = userbio;
@@ -252,6 +284,7 @@ async function run(){
             res.send(result)
         })
 
+        //get all the users
         app.get('/users', async(req, res) => {
             const query = {};
             const result = await usersCollection.find(query).toArray();
@@ -274,6 +307,7 @@ async function run(){
             res.send(result) 
         });
 
+        //make a user to admin
         app.put('/makeadmin', async(req, res) => {
             const email = req.query.email;
             const filter = {email: email}
@@ -283,7 +317,7 @@ async function run(){
                     role: "admin"
                 }
             }
-            const result = await teachersCollection.updateOne(filter, updatedDoc, options);
+            const result = await userCollection.updateOne(filter, updatedDoc, options);
             res.send(result)
         })
 
