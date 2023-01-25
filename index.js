@@ -48,7 +48,38 @@ async function run(){
         const teachersCollection = client.db('hello-Talk').collection('teachersCollection');
         const communityPostsCollection = client.db('hello-Talk').collection('communityPostsCollection');
         const postlikes = client.db('hello-Talk').collection('postlikes');
+        const postcomment = client.db('hello-Talk').collection('postcomment');
 
+
+        //payment system
+        // -------------------Stripe-------------
+        app.post('/create-payment-intent', async (req, res) => {
+            const order = req.body;
+            const price = order.price;
+            const amount = price;
+
+            const paymentIntent = await stripe.paymentIntents.create({
+                currency: 'usd',
+                amount: amount,
+                "payment_method_types": [
+                    "card"
+                ]
+            });
+            res.send({
+                clientSecret: paymentIntent.client_secret,
+            });
+        });
+
+        app.post("/payments", async (req, res) => {
+            const payments = req.body
+            console.log(payments)
+            const result = await paymentsCollection.insertOne(payments)
+            res.send(result);
+
+        });
+
+
+        //-----------------stripe end---------------
 
         //get courses data from mongodb
         app.get('/courses', async (req, res) => {
@@ -397,6 +428,24 @@ async function run(){
             const likebody = req.body;
             const result = await postlikes.insertOne(likebody);
             res.send(result)
+        })
+
+        app.get('/postlike', async (req, res) => {
+            const query = {}
+            const communitybody = await postlikes.find(query).toArray()
+            res.send(communitybody)
+        })
+
+        app.post('/postcomment', async(req, res) =>{
+            const communitybody = req.body;
+            const result = await postcomment.insertOne(communitybody);
+            res.send(result)
+        })
+
+        app.get('/postcomment', async (req, res) => {
+            const query = {};
+            const result = await postcomment.find(query).toArray();
+            res.send(result);
         })
 
     }
