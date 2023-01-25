@@ -47,6 +47,7 @@ async function run(){
         const flashcardCollection = client.db('hello-Talk').collection('flashcardCollection');
         const teachersCollection = client.db('hello-Talk').collection('teachersCollection');
         const communityPostsCollection = client.db('hello-Talk').collection('communityPostsCollection');
+        const postlikes = client.db('hello-Talk').collection('postlikes');
 
 
         //get courses data from mongodb
@@ -389,6 +390,12 @@ async function run(){
         app.get('/communityposts', async(req, res) => {
             const query = {};
             const result = await communityPostsCollection.find(query).toArray();
+            res.send(result)
+        });
+
+        app.post('/postlike', async(req, res) =>{
+            const likebody = req.body;
+            const result = await postlikes.insertOne(likebody);
             res.send(result)
         })
 
