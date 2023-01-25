@@ -442,11 +442,13 @@ async function run(){
             res.send(result)
         })
 
+        //post comment for community
         app.get('/postcomment', async (req, res) => {
             const query = {};
             const result = await postcomment.find(query).toArray();
             res.send(result);
         })
+        
 
     }
 
