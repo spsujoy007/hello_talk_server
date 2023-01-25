@@ -45,6 +45,9 @@ async function run(){
         const AquizCollection = client.db('hello-Talk').collection('AquizCollection');
         const faqCollection = client.db('hello-Talk').collection('faqCollection');
         const flashcardCollection = client.db('hello-Talk').collection('flashcardCollection');
+        const teachersCollection = client.db('hello-Talk').collection('teachersCollection');
+        const communityPostsCollection = client.db('hello-Talk').collection('communityPostsCollection');
+        const postlikes = client.db('hello-Talk').collection('postlikes');
 
 
         //get courses data from mongodb
@@ -60,6 +63,23 @@ async function run(){
             const result = await coursesCollection.findOne(query);
             res.send(result);
         });
+
+        //update the course
+        app.post('/course', async(req, res) => {
+            const id = req.query.id;
+            const coursedata = req.body;
+            const {picture, title, details, price, date, offer_price} = coursedata;
+
+            const filter = {_id: ObjectId(id)};
+            const options = {upsert: true};
+            const updatedDoc = {
+                $set: {
+                    picture, title, details, price, date, offer_price
+                }
+            }
+            const result = await coursesCollection.updateOne(filter, updatedDoc, options)
+            res.send(result)
+        })
 
         app.delete('/course/:id', async(req, res) => {
             const id = req.params.id;
@@ -106,7 +126,7 @@ async function run(){
             const options = {upsert: true};
             const updatedDoc = {
                 $set: {
-                    //update text here work running
+
                 }
             }
             const result = await blogsCollection.updateOne(filter, updatedDoc, options)
@@ -205,6 +225,29 @@ async function run(){
             res.send(result)
         })
 
+        //save the level when it complete in userCollection
+        app.post('/savelevel', async(req, res) => {
+            const newLevel = req.body;
+            const {completed_lv} = newLevel;
+            const email = req.query.email;
+            const filter = {email: email};
+            const options = {upsert: true};
+            const updatedDoc = {
+                $push: {
+                    completed_lv: completed_lv
+                }
+            };
+            const result = await userCollection.updateOne(filter, updatedDoc, options) 
+            res.send(result)
+        });
+
+        //check levels
+        app.get('/filterlevel', async(req, res) => {
+            const email = req.query.email;
+            const getUser = userCollection.find(user => user.email === email);
+            const completedlv = getUser.completed_lv;
+
+        })
 
         //authentication
         app.put('/users/:email', async (req, res) => {
@@ -222,15 +265,17 @@ async function run(){
             res.send({ result, token });
         })
 
+        //post my profile
         app.post('/user', async(req, res) => {
             const userdetail = req.body;
             const result = await userCollection.insertOne(userdetail);
             res.send(result)
         })
 
+        //update my profile with all information
         app.post('/upuser', async(req, res) => {
             const userbio = req.body;
-            const {name, age, education, district, country, number, email } = userbio;
+            const {name, age, education, district, country, number, email, realAge } = userbio;
             const useremail = req.query.email;
             const filter = {email: useremail};
             const options = {upsert: true}
@@ -238,6 +283,7 @@ async function run(){
                 $set:{
                     name,
                     age,
+                    realAge,
                     education,
                     district, 
                     country,
@@ -250,6 +296,7 @@ async function run(){
             res.send(result)
         })
 
+        //get all the users
         app.get('/users', async(req, res) => {
             const query = {};
             const result = await usersCollection.find(query).toArray();
@@ -265,11 +312,48 @@ async function run(){
         })
 
         //get single user api
-        app.get('/profile', (req, res) => {
+        app.get('/profile', async (req, res) => {
             const email = req.query.email;
             const query = {email: email}
-            const result = userCollection.findOne(query);
+            const result = await userCollection.findOne(query);
             res.send(result) 
+        });
+
+        //make a user to admin
+        app.put('/makeadmin', async(req, res) => {
+            const email = req.query.email;
+            const filter = {email: email}
+            const options = {upsert: true};
+            const updatedDoc = {
+                $set: {
+                    role: "admin"
+                }
+            }
+            const result = await userCollection.updateOne(filter, updatedDoc, options);
+            res.send(result)
+        })
+
+        //update gems by answering the question
+        app.post('/addgem', async (req, res) => {
+            const email = req.query.email;
+            const mygem = req.body;
+            //get the new gems
+            const {mGem} = mygem
+            
+            //find for get the user of previous gems
+            const getUser = await userCollection.findOne({email: email})
+            const {gems} =  getUser;
+            
+            const filter = {email: email};
+            const options = {upsert: true};
+            const updatedDoc= {
+                $set: {
+                    gems: gems + mGem
+                }
+            };
+
+            const result = await userCollection.updateOne(filter, updatedDoc, options)
+            res.send(result)
         })
 
         //delete an user from database
@@ -278,6 +362,41 @@ async function run(){
             const query = {_id: ObjectId(id)};
             const result = await userCollection.deleteOne(query);
             res.send(result);
+        });
+
+
+        //get all the teachers and description
+        app.get('/teachers', async (req, res) => {
+            const query = {};
+            const teachers = await teachersCollection.find(query).toArray();
+            res.send(teachers)
+        })
+
+        //get single teacher
+        app.get('/teacher/:id', async(req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id)};
+            const result = await teachersCollection.findOne(query);
+            res.send(result);
+        });
+
+        //post method community quesions or others
+        app.post('/addapost', async(req, res) => {
+            const question = req.body;
+            const result = await communityPostsCollection.insertOne(question);
+            res.send(result)
+        });
+
+        app.get('/communityposts', async(req, res) => {
+            const query = {};
+            const result = await communityPostsCollection.find(query).toArray();
+            res.send(result)
+        });
+
+        app.post('/postlike', async(req, res) =>{
+            const likebody = req.body;
+            const result = await postlikes.insertOne(likebody);
+            res.send(result)
         })
 
     }
