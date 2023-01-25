@@ -51,6 +51,36 @@ async function run(){
         const postcomment = client.db('hello-Talk').collection('postcomment');
 
 
+        //payment system
+        // -------------------Stripe-------------
+        app.post('/create-payment-intent', async (req, res) => {
+            const order = req.body;
+            const price = order.price;
+            const amount = price;
+
+            const paymentIntent = await stripe.paymentIntents.create({
+                currency: 'usd',
+                amount: amount,
+                "payment_method_types": [
+                    "card"
+                ]
+            });
+            res.send({
+                clientSecret: paymentIntent.client_secret,
+            });
+        });
+
+        app.post("/payments", async (req, res) => {
+            const payments = req.body
+            console.log(payments)
+            const result = await paymentsCollection.insertOne(payments)
+            res.send(result);
+
+        });
+
+
+        //-----------------stripe end---------------
+
         //get courses data from mongodb
         app.get('/courses', async (req, res) => {
             const query = {};
