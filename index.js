@@ -103,15 +103,28 @@ async function run(){
         app.post('/course', async(req, res) => {
             const id = req.query.id;
             const coursedata = req.body;
-            const {picture, title, details, price, date, offer_price} = coursedata;
+            const {
+                title1,
+                picture1,
+                details1,
+                date1,
+                price1,
+                offer_price1
+            } = coursedata;
 
             const filter = {_id: ObjectId(id)};
             const options = {upsert: true};
             const updatedDoc = {
                 $set: {
-                    picture, title, details, price, date, offer_price
+                    title: title1,
+                    picture: picture1,
+                    details: details1,
+                    date: date1,
+                    price: price1,
+                    offer_price: offer_price1
                 }
             }
+            
             const result = await coursesCollection.updateOne(filter, updatedDoc, options)
             res.send(result)
         })
@@ -158,28 +171,32 @@ async function run(){
             const id = req.query.id;
             const blogdata = req.body;
             const {
-                details,
-                date,
-                author_name,
-                author_img,
-                image,
-                tag,
-                package,
-                gems
+                title1,
+                details1,
+                date1,
+                author_name1,
+                author_img1,
+                image1,
+                tag1,
+                package1,
+                gems1,
+                age1
             } = blogdata;
 
             const filter = {_id: ObjectId(id)};
             const options = {upsert: true};
             const updatedDoc = {
                 $set: {
-                    details,
-                    date,
-                    author_name,
-                    author_img,
-                    image,
-                    tag,
-                    package,
-                    gems
+                    title: title1,
+                    details: details1,
+                    date: date1,
+                    author_name: author_name1,
+                    author_img: author_img1,
+                    image: image1,
+                    tag: tag1,
+                    package: package1,
+                    gems: gems1,
+                    age: age1
                 }
             }
             const result = await blogsCollection.updateOne(filter, updatedDoc, options)
