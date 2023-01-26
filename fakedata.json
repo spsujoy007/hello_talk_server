@@ -1,16 +1,18 @@
 [
     {
-        "picture":"https://i.ytimg.com/vi/iwfNNO1uHew/maxresdefault.jpg",
-        "title":"Academic writing",
-        "details":"Academic writing is a formal style of writing used in universities and scholarly publications. You'll encounter it in journal articles and books on academic topics, and you'll be expected to write your essays, research papers, and dissertation in academic style.",
-        "price":"5100","offer-price":"2500",
+        "picture": "https://i.ytimg.com/vi/iwfNNO1uHew/maxresdefault.jpg",
+        "title": "Academic writing",
+        "details": "Academic writing is a formal style of writing used in universities and scholarly publications. You'll encounter it in journal articles and books on academic topics, and you'll be expected to write your essays, research papers, and dissertation in academic style.",
+        "price": "5100",
+        "offer-price": "2500",
         "date": "2023-01-11 - 11:47PM"
     },
     {
-        "picture":"https://www.totaljobs.com/advice/wp-content/uploads/most-common-interview-questions.jpg",
-        "title":"Prepare for a job interview in English",
-        "details":"Job interviews are usually stressful, and a job interview in English can be doubly so. It's worth taking the time to prepare for your job interview in English more thoroughly than you might prepare for a regular job interview (although you should be prepared for those too!), just so that you can feel more comfortable on the big day.",
-        "price":"8500","offer-price":"6200",
+        "picture": "https://www.totaljobs.com/advice/wp-content/uploads/most-common-interview-questions.jpg",
+        "title": "Prepare for a job interview in English",
+        "details": "Job interviews are usually stressful, and a job interview in English can be doubly so. It's worth taking the time to prepare for your job interview in English more thoroughly than you might prepare for a regular job interview (although you should be prepared for those too!), just so that you can feel more comfortable on the big day.",
+        "price": "8500",
+        "offer-price": "6200",
         "date": "2023-01-11 - 11:54PM"
     }
 ]
