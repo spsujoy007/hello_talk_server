@@ -85,6 +85,14 @@ async function run(){
 
         //-----------------stripe end---------------
 
+
+        //add new course post request
+        app.post('/course', async(req, res) => {
+            const coursebody = req.body;
+            const result = await coursesCollection.insertOne(coursebody);
+            res.send(result)
+        })
+        
         //get courses data from mongodb
         app.get('/courses', async (req, res) => {
             const query = {};
@@ -100,7 +108,7 @@ async function run(){
         });
 
         //update the course
-        app.post('/course', async(req, res) => {
+        app.post('/upcourse', async(req, res) => {
             const id = req.query.id;
             const coursedata = req.body;
             const {
@@ -109,7 +117,7 @@ async function run(){
                 details1,
                 date1,
                 price1,
-                offer_price1
+                offer_price1,
             } = coursedata;
 
             const filter = {_id: ObjectId(id)};
@@ -121,10 +129,10 @@ async function run(){
                     details: details1,
                     date: date1,
                     price: price1,
-                    offer_price: offer_price1
+                    offer_price: offer_price1,
                 }
             }
-            
+
             const result = await coursesCollection.updateOne(filter, updatedDoc, options)
             res.send(result)
         })
