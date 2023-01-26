@@ -157,7 +157,7 @@ async function run(){
             const options = {upsert: true};
             const updatedDoc = {
                 $set: {
-
+                    
                 }
             }
             const result = await blogsCollection.updateOne(filter, updatedDoc, options)
@@ -444,7 +444,13 @@ async function run(){
 
         //post comment for community
         app.get('/postcomment', async (req, res) => {
-            const query = {};
+            const result = await postcomment.find({}).toArray();
+            res.send(result);
+        })
+
+        app.get('/comment', async (req, res) => {
+            const postid = req.query.id;
+            const query = {pid: postid};
             const result = await postcomment.find(query).toArray();
             res.send(result);
         })
