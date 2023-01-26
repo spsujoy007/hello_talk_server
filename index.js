@@ -1,6 +1,9 @@
 const express = require('express')
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+
+const stripe = require("stripe")("sk_test_51M7c2bCrl3dQ57EJMOlipKJpX43py1TqYR0wIuxSuUqrCNs5wm5ZZqbdfoC9Sg4pPnoRjyK555NERoxbngBBbRhS00TlyNUFoE");
+
 const jwt = require('jsonwebtoken');
 require('dotenv').config()
 const app = express()
@@ -36,6 +39,7 @@ function verifyJWT(req, res, next){
 async function run(){
     try{
         const coursesCollection = client.db('hello-Talk').collection('coursesCollection');
+        const paymentsCollection = client.db('hello-Talk').collection('paymentsCollection');
         const levelsCollcetion = client.db('hello-Talk').collection('levelsCollcetion');
         const blogsCollection = client.db('hello-Talk').collection('blogsCollection');
         const usersCollection = client.db('hello-Talk').collection('usersCollection');
@@ -150,18 +154,36 @@ async function run(){
         })
 
         //edit blogs by post
-        app.post('/upblog/:id', async(req, res) => {
-            const id = req.params.id;
+        app.post('/upblog', async(req, res) => {
+            const id = req.query.id;
             const blogdata = req.body;
+            const {
+                details,
+                date,
+                author_name,
+                author_img,
+                image,
+                tag,
+                package,
+                gems
+            } = blogdata;
+
             const filter = {_id: ObjectId(id)};
             const options = {upsert: true};
             const updatedDoc = {
                 $set: {
-                    
+                    details,
+                    date,
+                    author_name,
+                    author_img,
+                    image,
+                    tag,
+                    package,
+                    gems
                 }
             }
             const result = await blogsCollection.updateOne(filter, updatedDoc, options)
-
+            res.send(result)
         })
 
         //delete blog 
