@@ -1,6 +1,9 @@
 const express = require('express')
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+
+const stripe = require("stripe")("sk_test_51M7c2bCrl3dQ57EJMOlipKJpX43py1TqYR0wIuxSuUqrCNs5wm5ZZqbdfoC9Sg4pPnoRjyK555NERoxbngBBbRhS00TlyNUFoE");
+
 const jwt = require('jsonwebtoken');
 require('dotenv').config()
 const app = express()
@@ -36,6 +39,7 @@ function verifyJWT(req, res, next){
 async function run(){
     try{
         const coursesCollection = client.db('hello-Talk').collection('coursesCollection');
+        const paymentsCollection = client.db('hello-Talk').collection('paymentsCollection');
         const levelsCollcetion = client.db('hello-Talk').collection('levelsCollcetion');
         const blogsCollection = client.db('hello-Talk').collection('blogsCollection');
         const usersCollection = client.db('hello-Talk').collection('usersCollection');
@@ -70,6 +74,7 @@ async function run(){
             });
         });
 
+        //insert new payment in collection
         app.post("/payments", async (req, res) => {
             const payments = req.body
             console.log(payments)
@@ -78,8 +83,39 @@ async function run(){
 
         });
 
+        //get all the payment history
+        app.get('/payments', async(req, res) => {
+            const query = {};
+            const result = await paymentsCollection.find(query).toArray();
+            res.send(result)
+        })
+
+        //get single payment history with email
+        app.get('/userpayments', async(req, res) => {
+            const email = req.query.email
+            const query = {email: email};
+            const result = await paymentsCollection.find(query).toArray()
+            res.send(result)
+        })
+
+        //get single payment history with email
+        app.get('/paymentbycourse', async(req, res) => {
+            const id = req.query.id
+            const query = { _id: ObjectId(id)};
+            const result = await paymentsCollection.findOne(query)
+            res.send(result)
+        })
+
 
         //-----------------stripe end---------------
+
+
+        //add new course post request
+        app.post('/course', async(req, res) => {
+            const coursebody = req.body;
+            const result = await coursesCollection.insertOne(coursebody);
+            res.send(result)
+        })
 
         //get courses data from mongodb
         app.get('/courses', async (req, res) => {
@@ -88,6 +124,7 @@ async function run(){
             res.send(result);
         });
 
+        //get single course by id
         app.get('/course/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id)}
@@ -96,22 +133,38 @@ async function run(){
         });
 
         //update the course
-        app.post('/course', async(req, res) => {
+        app.post('/upcourse', async(req, res) => {
             const id = req.query.id;
             const coursedata = req.body;
-            const {picture, title, details, price, date, offer_price} = coursedata;
+            const {
+                title1,
+                picture1,
+                details1,
+                date1,
+                price1,
+                offer_price1,
+                module_links1,
+            } = coursedata;
 
             const filter = {_id: ObjectId(id)};
             const options = {upsert: true};
             const updatedDoc = {
                 $set: {
-                    picture, title, details, price, date, offer_price
+                    title: title1,
+                    picture: picture1,
+                    details: details1,
+                    date: date1,
+                    price: price1,
+                    offer_price: offer_price1,
+                    module_links: module_links1
                 }
             }
+
             const result = await coursesCollection.updateOne(filter, updatedDoc, options)
             res.send(result)
         })
 
+        //delete the single course by id
         app.delete('/course/:id', async(req, res) => {
             const id = req.params.id;
             const query = {_id: ObjectId(id)};
@@ -150,18 +203,40 @@ async function run(){
         })
 
         //edit blogs by post
-        app.post('/upblog/:id', async(req, res) => {
-            const id = req.params.id;
+        app.post('/upblog', async(req, res) => {
+            const id = req.query.id;
             const blogdata = req.body;
+            const {
+                title1,
+                details1,
+                date1,
+                author_name1,
+                author_img1,
+                image1,
+                tag1,
+                package1,
+                gems1,
+                age1
+            } = blogdata;
+
             const filter = {_id: ObjectId(id)};
             const options = {upsert: true};
             const updatedDoc = {
                 $set: {
-
+                    title: title1,
+                    details: details1,
+                    date: date1,
+                    author_name: author_name1,
+                    author_img: author_img1,
+                    image: image1,
+                    tag: tag1,
+                    package: package1,
+                    gems: gems1,
+                    age: age1
                 }
             }
             const result = await blogsCollection.updateOne(filter, updatedDoc, options)
-
+            res.send(result)
         })
 
         //delete blog 
@@ -173,6 +248,7 @@ async function run(){
         })
         //\__________________________blogs end______________________________/\\
 
+        //\_______________________Review API Start___________________________/\\
         //post review in database
         app.post('/postreview', async(req, res) => {
             const review = req.body;
@@ -199,6 +275,7 @@ async function run(){
                 const error = {message: "no email found"}
             }
         })
+        //\_______________________Review API End___________________________/\\
 
         //frequently asked question 
         app.get('/faq', async ( req, res) => {
@@ -444,7 +521,13 @@ async function run(){
 
         //post comment for community
         app.get('/postcomment', async (req, res) => {
-            const query = {};
+            const result = await postcomment.find({}).toArray();
+            res.send(result);
+        })
+
+        app.get('/comment', async (req, res) => {
+            const postid = req.query.id;
+            const query = {pid: postid};
             const result = await postcomment.find(query).toArray();
             res.send(result);
         })
