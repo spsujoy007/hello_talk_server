@@ -74,6 +74,7 @@ async function run(){
             });
         });
 
+        //insert new payment in collection
         app.post("/payments", async (req, res) => {
             const payments = req.body
             console.log(payments)
@@ -82,16 +83,26 @@ async function run(){
 
         });
 
+        //get all the payment history
         app.get('/payments', async(req, res) => {
             const query = {};
             const result = await paymentsCollection.find(query).toArray();
             res.send(result)
         })
 
+        //get single payment history with email
         app.get('/userpayments', async(req, res) => {
             const email = req.query.email
             const query = {email: email};
-            const result = await paymentsCollection.find(query).toArray();
+            const result = await paymentsCollection.find(query).toArray()
+            res.send(result)
+        })
+
+        //get single payment history with email
+        app.get('/paymentbycourse', async(req, res) => {
+            const id = req.query.id
+            const query = { _id: ObjectId(id)};
+            const result = await paymentsCollection.findOne(query)
             res.send(result)
         })
 
@@ -113,6 +124,7 @@ async function run(){
             res.send(result);
         });
 
+        //get single course by id
         app.get('/course/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id)}
@@ -152,6 +164,7 @@ async function run(){
             res.send(result)
         })
 
+        //delete the single course by id
         app.delete('/course/:id', async(req, res) => {
             const id = req.params.id;
             const query = {_id: ObjectId(id)};
@@ -235,6 +248,7 @@ async function run(){
         })
         //\__________________________blogs end______________________________/\\
 
+        //\_______________________Review API Start___________________________/\\
         //post review in database
         app.post('/postreview', async(req, res) => {
             const review = req.body;
@@ -261,6 +275,7 @@ async function run(){
                 const error = {message: "no email found"}
             }
         })
+        //\_______________________Review API End___________________________/\\
 
         //frequently asked question 
         app.get('/faq', async ( req, res) => {
