@@ -1,93 +1,108 @@
 [
     {
-        "age": "young",
-        "id": 1,
-        "levels": [
-                    {
-                        "level": 1,
-                        "question": [
-                            {
-                                "id": 1,
-                                "question_no": 1,
-                                "question": "Do you know what is love?",
-                                "options": [
-                                    {"opt_1": "Love is an emotion"},
-                                    {"opt_2": "Love is feel"},
-                                    {"opt_3": "Love is just friendship"}
-                                ],
-                                "answer": "Love is an emotion"
-                            }
-                        ]
-                    },
-                    {
-                        "level": 2,
-                        "id": 2,
-                        "story": "Emotions are mental states brought on by neurophysiological changes, variously associated with thoughts, feelings, behavioral responses, and a degree of pleasure or displeasure."
-                    },
-                    {
-                        "level": 3,
-                        "id": 3,
-                        "question": [
-                            {
-                                "id": 1,
-                                "question_no": 1,
-                                "question": "বিখ্যাত-এর অনুবাদ কী হবে?",
-                                "options": [
-                                    {"opt_1": "Fashion"},
-                                    {"opt_2": "Famious"},
-                                    {"opt_3": "Freindship"}
-                                ],
-                                "answer": "Famious"
-                            }
-                        ]
-                    }
-                ]
-            } 
-]
-
-[
+      "title": "Improve your grammer",
+      "picture": "https://i.ytimg.com/vi/iwfNNO1uHew/maxresdefault.jpg",
+      "details": "Academic writing is a formal style of writing used in universities and scholarly publications. You'll encounter it in journal articles and books on academic topics, and you'll be expected to write your essays, research papers, and dissertation in academic style.",
+      "price": "5100",
+      "date": "1/26/2023, 11:02 PM",
+      "offer_price": "2500",
+      "module_links": [
+        {
+            "title": "video 1",
+            "link": "https://www.youtube.com/watch?v=tLaiUarjNj8&list=PLoDjs_CkjI65Xmb76tb1O_fn4WC4a20a1&ab_channel=linguamarina"
+        },
+        {
+            "title": "video 2",
+            "link": "https://www.youtube.com/watch?v=6LFjVC3cHjI&list=PLoDjs_CkjI65Xmb76tb1O_fn4WC4a20a1&index=2"
+        },
+        {
+            "title": "video 3",
+            "link": "https://www.youtube.com/watch?v=3aQJ_OtIEFc&list=PLoDjs_CkjI65Xmb76tb1O_fn4WC4a20a1&index=3"
+        },
+        {
+            "title": "video 4",
+            "link": "https://www.youtube.com/watch?v=ck2H9D5DS5U&list=PLoDjs_CkjI65Xmb76tb1O_fn4WC4a20a1&index=4"
+        },
+        {
+            "title": "video 5",
+            "link": "https://www.youtube.com/watch?v=XBF00lEoRi8&list=PLoDjs_CkjI65Xmb76tb1O_fn4WC4a20a1&index=5"
+        },
+        {
+            "title": "video 6",
+            "link": "https://www.youtube.com/watch?v=0rPdFMsJlSE&list=PLoDjs_CkjI65Xmb76tb1O_fn4WC4a20a1&index=6"
+        },
+        {
+            "title": "video 7",
+            "link": "https://www.youtube.com/watch?v=uGkcTdrKjto&list=PLoDjs_CkjI65Xmb76tb1O_fn4WC4a20a1&index=7"
+        },
+        {
+            "title": "video 8",
+            "link": "https://www.youtube.com/watch?v=8t4JKCvdLNE&list=PLoDjs_CkjI65Xmb76tb1O_fn4WC4a20a1&index=8"
+        },
+        {
+            "title": "video 9",
+            "link": "https://www.youtube.com/watch?v=bPJZQg2cBFA&list=PLoDjs_CkjI65Xmb76tb1O_fn4WC4a20a1&index=9"
+        },
+        {
+            "title": "video 9",
+            "link": "https://www.youtube.com/watch?v=-NyEFcN_Gg0&list=PLoDjs_CkjI65Xmb76tb1O_fn4WC4a20a1&index=10"
+        }
+      ]
+    },
     {
-        "age": "young",
-        "id": 1,
-        "levels": [
-                    {
-                        "level": 1,
-                        "question": [
-                            {
-                                "id": 1,
-                                "question_no": 1,
-                                "question": "Do you know what is love?",
-                                "options": [
-                                    {"opt_1": "Love is an emotion"},
-                                    {"opt_2": "Love is feel"},
-                                    {"opt_3": "Love is just friendship"}
-                                ],
-                                "answer": "Love is an emotion"
-                            }
-                        ]
-                    },
-                    {
-                        "level": 2,
-                        "id": 2,
-                        "story": "Emotions are mental states brought on by neurophysiological changes, variously associated with thoughts, feelings, behavioral responses, and a degree of pleasure or displeasure."
-                    },
-                    {
-                        "level": 3,
-                        "id": 3,
-                        "question": [
-                            {
-                                "id": 1,
-                                "question_no": 1,
-                                "question": "বিখ্যাত-এর অনুবাদ কী হবে?",
-                                "options": [
-                                    {"opt_1": "Fashion"},
-                                    {"opt_2": "Famious"},
-                                    {"opt_3": "Freindship"}
-                                ],
-                                "answer": "Famious"
-                            }
-                        ]
-                    }
-                ]
-            } 
-]
+      "title": "Internet Slang and abbreviations",
+      "picture": "https://img.freepik.com/premium-vector/candidate-hr-manager-having-job-interview_179970-732.jpg?w=2000",
+      "details": "Job interviews are usually stressful, and a job interview in English can be doubly so. It's worth taking the time to prepare for your job interview in English more thoroughly than you might prepare for a regular job interview (although you should be prepared for those too!), just so that you can feel more comfortable on the big day.",
+      "price": "8500",
+      "date": "2023-01-11 - 11:54PM",
+      "offer_price": "6200",
+      "module_links": [
+        {
+            "title": "video 1",
+            "link": "https://www.youtube.com/watch?v=_Xkv0KepzZE&list=PLoDjs_CkjI65CLJBcjrjvetc-oXCw6-VE&index=1"
+        },
+        {
+            "title": "video 2",
+            "link": "https://www.youtube.com/watch?v=A74fyukqzaU&list=PLoDjs_CkjI65CLJBcjrjvetc-oXCw6-VE&index=2"
+        },
+        {
+            "title": "video 3",
+            "link": "https://www.youtube.com/watch?v=ciM0UBHJEvs&list=PLoDjs_CkjI65CLJBcjrjvetc-oXCw6-VE&index=3&t=479s"
+        }
+      ]
+    },
+    {
+      "title": "Speak English Like a Native",
+      "picture": "https://i.ibb.co/z6p7vj0/istockphoto-1344081571-612x612.jpg",
+      "details": "Learn medical English to expand your career opportunities as a healthcare professional in this free online course.",
+      "price": "5000",
+      "date": "2023-01-11 - 12:00AM",
+      "offer_price": "2300",
+      "module_links": [
+        {
+            "title": "video 1",
+            "link": "https://www.youtube.com/watch?v=KkJVd9pf_HQ&list=PLoDjs_CkjI67S4XSlzYGMaG5WDdSia1-D&ab_channel=linguamarina"
+        },
+        {
+            "title": "video 2",
+            "link": "https://www.youtube.com/watch?v=keZnAtBxO-c&list=PLoDjs_CkjI67S4XSlzYGMaG5WDdSia1-D&index=2&ab_channel=linguamarina"
+        },
+        {
+            "title": "video 3",
+            "link": "https://www.youtube.com/watch?v=otUnhd8ozg8&list=PLoDjs_CkjI67S4XSlzYGMaG5WDdSia1-D&index=3&ab_channel=linguamarina"
+        },
+        {
+            "title": "video 4",
+            "link": "https://www.youtube.com/watch?v=Fo82S6CC7V4&list=PLoDjs_CkjI67S4XSlzYGMaG5WDdSia1-D&index=4&ab_channel=linguamarina"
+        },
+        {
+            "title": "video 5",
+            "link": "https://www.youtube.com/watch?v=Z7-FtCW9p3Q&list=PLoDjs_CkjI67S4XSlzYGMaG5WDdSia1-D&index=5&ab_channel=linguamarina"
+        },
+        {
+            "title": "video 6",
+            "link": "https://www.youtube.com/watch?v=AsC0Cd5nMvM&list=PLoDjs_CkjI67S4XSlzYGMaG5WDdSia1-D&index=6&ab_channel=linguamarina"
+        }
+      ]
+    }
+  ]

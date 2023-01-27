@@ -82,6 +82,19 @@ async function run(){
 
         });
 
+        app.get('/payments', async(req, res) => {
+            const query = {};
+            const result = await paymentsCollection.find(query).toArray();
+            res.send(result)
+        })
+
+        app.get('/userpayments', async(req, res) => {
+            const email = req.query.email
+            const query = {email: email};
+            const result = await paymentsCollection.find(query).toArray();
+            res.send(result)
+        })
+
 
         //-----------------stripe end---------------
 
@@ -92,7 +105,7 @@ async function run(){
             const result = await coursesCollection.insertOne(coursebody);
             res.send(result)
         })
-        
+
         //get courses data from mongodb
         app.get('/courses', async (req, res) => {
             const query = {};
@@ -118,6 +131,7 @@ async function run(){
                 date1,
                 price1,
                 offer_price1,
+                module_links1,
             } = coursedata;
 
             const filter = {_id: ObjectId(id)};
@@ -130,6 +144,7 @@ async function run(){
                     date: date1,
                     price: price1,
                     offer_price: offer_price1,
+                    module_links: module_links1
                 }
             }
 
