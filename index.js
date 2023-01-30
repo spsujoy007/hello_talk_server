@@ -53,6 +53,7 @@ async function run(){
         const communityPostsCollection = client.db('hello-Talk').collection('communityPostsCollection');
         const postlikes = client.db('hello-Talk').collection('postlikes');
         const postcomment = client.db('hello-Talk').collection('postcomment');
+        const notifyEmailCollection = client.db('hello-Talk').collection('notifyEmailCollection');
 
 
         //payment system
@@ -108,6 +109,20 @@ async function run(){
 
 
         //-----------------stripe end---------------
+
+        
+        app.post('/postcomment', async (req, res) => {
+            const communitybody = req.body;
+            const result = await postcomment.insertOne(communitybody);
+            res.send(result)
+        })
+
+        app.get('/comment/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { pid: id }
+            const result = await postcomment.find(query).toArray();
+            res.send(result);
+        })
 
 
         //add new course post request
@@ -507,16 +522,29 @@ async function run(){
             res.send(result)
         })
 
-        app.get('/postlike', async (req, res) => {
-            const query = {}
-            const communitybody = await postlikes.find(query).toArray()
-            res.send(communitybody)
-        })
+        // app.get('/postlike', async (req, res) => {
+        //     const query = {}
+        //     const communitybody = await postlikes.find(query).toArray()
+        //     res.send(communitybody)
+        // })
 
-        app.post('/postcomment', async(req, res) =>{
+        // app.post('/postcomment', async(req, res) =>{
+        //     const communitybody = req.body;
+        //     const result = await postcomment.insertOne(communitybody);
+        //     res.send(result)
+        // })
+
+        app.post('/postcomment', async (req, res) => {
             const communitybody = req.body;
             const result = await postcomment.insertOne(communitybody);
             res.send(result)
+        })
+
+        app.get('/comment/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { pid: id }
+            const result = await postcomment.find(query).toArray();
+            res.send(result);
         })
 
         //post comment for community
