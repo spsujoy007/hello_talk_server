@@ -252,6 +252,18 @@ async function run(){
             }
             const result = await blogsCollection.updateOne(filter, updatedDoc, options)
             res.send(result)
+        });
+
+        //notify email save api
+        app.post('/notifyblog', async(req, res) => {
+            const email = req.body;
+            const result = await notifyEmailCollection.insertOne(email)
+            res.send(result)
+        })
+
+        app.get('/notifyblog', async(req, res) => {
+            const result = await notifyEmailCollection.find({}).toArray()
+            res.send(result)
         })
 
         //delete blog 
