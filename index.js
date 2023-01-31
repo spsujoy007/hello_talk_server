@@ -530,6 +530,31 @@ async function run(){
             res.send(result)
         })
 
+        app.post('/updateteacher', async(req, res) => {
+            const id = req.query.id;
+            const teacherDetail = req.body;
+            const {
+                name1,
+                image1,
+                details1,
+                date1,
+                qualification1,
+            } = teacherDetail;
+            const filter = {_id: ObjectId(id)};
+            const options = {upsert: true};
+            const updatedDoc = {
+                $set: {
+                    name: name1,
+                    image: image1,
+                    details: details1,
+                    date: date1,
+                    qualification: qualification1
+                }
+            }
+            const result = await teachersCollection.updateOne(filter, updatedDoc, options)
+            res.send(result)
+        })
+
         //post method community quesions or others
         app.post('/addapost', async(req, res) => {
             const question = req.body;
