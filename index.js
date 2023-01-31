@@ -515,6 +515,46 @@ async function run(){
             res.send(result);
         });
 
+        //POST API add teachere api
+        app.post('/addteacher', async(req, res) => {
+            const teacherBody = req.body;
+            const result = await teachersCollection.insertOne(teacherBody)
+            res.send(result)
+        })
+
+        //delete teacher api
+        app.delete('/removeteacher', async(req, res) => {
+            const id = req.query.id;
+            const query = {_id: ObjectId(id)}
+            const result = await teachersCollection.deleteOne(query)
+            res.send(result)
+        })
+
+        app.post('/updateteacher', async(req, res) => {
+            const id = req.query.id;
+            const teacherDetail = req.body;
+            const {
+                name1,
+                image1,
+                details1,
+                date1,
+                qualification1,
+            } = teacherDetail;
+            const filter = {_id: ObjectId(id)};
+            const options = {upsert: true};
+            const updatedDoc = {
+                $set: {
+                    name: name1,
+                    image: image1,
+                    details: details1,
+                    date: date1,
+                    qualification: qualification1
+                }
+            }
+            const result = await teachersCollection.updateOne(filter, updatedDoc, options)
+            res.send(result)
+        })
+
         //post method community quesions or others
         app.post('/addapost', async(req, res) => {
             const question = req.body;
@@ -531,6 +571,17 @@ async function run(){
         app.post('/postlike', async(req, res) =>{
             const likebody = req.body;
             const result = await postlikes.insertOne(likebody);
+            res.send(result)
+        })
+
+        app.get('/like', async(req, res) => {
+            const email = req.query.email;
+            const id = req.query.id;
+            const query = {
+                email: email,
+                pid: id
+            }
+            const result = await postlikes.findOne(query)
             res.send(result)
         })
 
