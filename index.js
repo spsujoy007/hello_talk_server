@@ -515,6 +515,21 @@ async function run(){
             res.send(result);
         });
 
+        //POST API add teachere api
+        app.post('/addteacher', async(req, res) => {
+            const teacherBody = req.body;
+            const result = await teachersCollection.insertOne(teacherBody)
+            res.send(result)
+        })
+
+        //delete teacher api
+        app.delete('/removeteacher', async(req, res) => {
+            const id = req.query.id;
+            const query = {_id: ObjectId(id)}
+            const result = await teachersCollection.deleteOne(query)
+            res.send(result)
+        })
+
         //post method community quesions or others
         app.post('/addapost', async(req, res) => {
             const question = req.body;
@@ -531,6 +546,17 @@ async function run(){
         app.post('/postlike', async(req, res) =>{
             const likebody = req.body;
             const result = await postlikes.insertOne(likebody);
+            res.send(result)
+        })
+
+        app.get('/like', async(req, res) => {
+            const email = req.query.email;
+            const id = req.query.id;
+            const query = {
+                email: email,
+                pid: id
+            }
+            const result = await postlikes.findOne(query)
             res.send(result)
         })
 
