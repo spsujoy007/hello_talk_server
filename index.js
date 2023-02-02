@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config()
 const app = express()
 const stripe = require("stripe")("sk_test_51M7c2bCrl3dQ57EJMOlipKJpX43py1TqYR0wIuxSuUqrCNs5wm5ZZqbdfoC9Sg4pPnoRjyK555NERoxbngBBbRhS00TlyNUFoE");
+const routerCommunity = require("./Routes/Community")
 
 //port of the server
 const port = process.env.PORT || 5000;
@@ -50,6 +51,7 @@ async function run() {
         const communityPostsCollection = client.db('hello-Talk').collection('communityPostsCollection');
         const postlikes = client.db('hello-Talk').collection('postlikes');
         const postcomment = client.db('hello-Talk').collection('postcomment');
+        const topAuthors = client.db('hello-Talk').collection('topAuthors');
 
 
         //payment system
@@ -412,45 +414,8 @@ async function run() {
             res.send(result);
         });
 
-        //post method community quesions or others
-        app.post('/addapost', async (req, res) => {
-            const question = req.body;
-            const result = await communityPostsCollection.insertOne(question);
-            res.send(result)
-        });
-
-        app.get('/communityposts', async (req, res) => {
-            const query = {};
-            const result = await communityPostsCollection.find(query).toArray();
-            res.send(result)
-        });
-
-        app.post('/postlike', async (req, res) => {
-            const likebody = req.body;
-            const result = await postlikes.insertOne(likebody);
-            res.send(result)
-        })
-
-        app.get('/postlike', async (req, res) => {
-            const query = {}
-            const communitybody = await postlikes.find(query).toArray()
-            res.send(communitybody)
-        })
-
-        app.post('/postcomment', async (req, res) => {
-            const communitybody = req.body;
-            const result = await postcomment.insertOne(communitybody);
-            res.send(result)
-        })
-
-        //post comment for community
-        app.get('/comment/:id', async (req, res) => {
-            const id = req.params.email
-            const query = { pid: id }
-            const result = await postcomment.find(query).toArray();
-            res.send(result);
-        })
-
+        // Community Page api
+        app.use("/community", routerCommunity)
 
     }
 
