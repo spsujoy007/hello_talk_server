@@ -54,6 +54,26 @@ async function run(){
         const postlikes = client.db('hello-Talk').collection('postlikes');
         const postcomment = client.db('hello-Talk').collection('postcomment');
         const notifyEmailCollection = client.db('hello-Talk').collection('notifyEmailCollection');
+        const messageCollection = client.db('hello-Talk').collection('messageCollection');
+
+
+        // CHAT SYSTEM START
+        app.post('/send-message', async (req, res) => {
+            const data = req.body;
+            const currentDate = new Date();
+            const msgData = {
+                sender: data.sender,
+                senderId: data.senderId,
+                recId: data.recId,
+                msg: data.msg,
+                date: currentDate
+            }
+            const result = await messageCollection.insertOne(msgData);
+            res.send({ result, msgData });
+        })
+        // CHAT SYSTEM END
+
+
 
 
         //payment system
