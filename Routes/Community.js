@@ -9,13 +9,10 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 console.log(uri)
 
 
-
-
 const communityPostsCollection = client.db('hello-Talk').collection('communityPostsCollection');
 const postlikes = client.db('hello-Talk').collection('postlikes');
 const postcomment = client.db('hello-Talk').collection('postcomment');
 const topAuthors = client.db('hello-Talk').collection('topAuthors');
-
 
 
 router.post('/addapost', async (req, res) => {
@@ -101,9 +98,10 @@ router.get('/commentcount', async (req, res) => {
     res.send(communitybody)
 })
 
+
+
+
 // app.use("/community", routerCommunity)
-
-
 //post method community quesions or others
 // app.post('/addapost', async (req, res) => {
 //     const question = req.body;
