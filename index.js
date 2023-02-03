@@ -663,26 +663,6 @@ async function run(){
             res.send(result);
         })
 
-        //for leader board
-//         app.get('/highcommentor', async (req, res) => {
-//             const query = {}
-//             const result =  postcomment.aggregate([
-//     {
-//         $group: {
-//             _id: "$commentor",
-//             count: { $sum: 1 }
-//         }
-//     },
-//     {
-//         $sort: { count: -1 }
-//     }
-//   ]).toArray((err, result) => {
-//     console.log(result);
-//     client.close();
-//   });
-//             res.send(result);
-//         })
-
         app.get('/comment', async (req, res) => {
             const postid = req.query.id;
             const query = {pid: postid};
