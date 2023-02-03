@@ -1,11 +1,16 @@
 const express = require('express')
 const cors = require('cors');
+
+//nodemailer
+const nodemailer = require('nodemailer');
+const mg = require('nodemailer-mailgun-transport');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 const stripe = require("stripe")("sk_test_51M7c2bCrl3dQ57EJMOlipKJpX43py1TqYR0wIuxSuUqrCNs5wm5ZZqbdfoC9Sg4pPnoRjyK555NERoxbngBBbRhS00TlyNUFoE");
 
 const jwt = require('jsonwebtoken');
 require('dotenv').config()
+
 const app = express()
 const stripe = require("stripe")("sk_test_51M7c2bCrl3dQ57EJMOlipKJpX43py1TqYR0wIuxSuUqrCNs5wm5ZZqbdfoC9Sg4pPnoRjyK555NERoxbngBBbRhS00TlyNUFoE");
 const routerCommunity = require("./Routes/Community")
@@ -23,6 +28,48 @@ app.use(express.json())
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.6ke0m0t.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
+function notifyBlog(blog){
+    const {author_name, title, details} = blog
+    // let transporter = nodemailer.createTransport({
+    //     host: 'smtp.sendgrid.net',
+    //     port: 587,
+    //     auth: {
+    //         user: "apikey",
+    //         pass: process.env.SENDGRID_API_KEY
+    //     }
+    //  })
+
+    const auth = {
+        auth: {
+          api_key: process.env.EMAIL_API_PROVIDER,
+          domain: process.env.EMAIL_SEND_DOMAIN
+        }
+      }
+      
+    const transporter = nodemailer.createTransport(mg(auth));
+
+     transporter.sendMail({
+        from: 'hellotalk2k23@gmail.com', // verified sender email
+        to: "sujoypaul728@gmail", // recipient email
+        subject: `New blog published by ${author_name}`, // Subject line
+        // text: "Hello world!", // plain text body
+        html: `
+            <div>
+                <h3>${title}</h3>
+                <p>${details}</p>
+            </div>
+            <h1 style="text: "center"><b>Thanks from (Hello Talk)</b></h1>
+        `, // html body
+      }, function(error, info){
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+      });
+}
+
+function verifyJWT(req, res, next){
 function verifyJWT(req, res, next) {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
@@ -182,6 +229,7 @@ async function run() {
         app.post('/blog', async (req, res) => {
             const blog = req.body;
             const result = await blogsCollection.insertOne(blog)
+            notifyBlog(blog)
             res.send(result)
         })
 
@@ -489,6 +537,38 @@ async function run() {
         });
 
 
+        //for leader board
+        app.get('/highcommentor', async (req, res) => {
+            const query = {}
+            const result =  postcomment.aggregate([
+    {
+        $group: {
+            _id: "$commentor",
+            count: { $sum: 1 }
+        }
+    },
+    {
+        $sort: { count: -1 }
+    }
+  ]).toArray((err, result) => {
+    console.log(result);
+    client.close();
+  });
+            res.send(result);
+        })
+
+        app.get('/comment', async (req, res) => {
+            const postid = req.query.id;
+            const query = {pid: postid};
+            const result = await postcomment.find(query).toArray();
+            res.send(result);
+        });
+
+        app.get('/commentcount', async(req, res) => {
+            const email = req.query.email;
+            const result = await postcomment.find({email: email}).toArray()
+            res.send(result)
+        })
 
     }
 
