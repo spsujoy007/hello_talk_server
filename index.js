@@ -6,6 +6,9 @@ const nodemailer = require('nodemailer');
 const mg = require('nodemailer-mailgun-transport');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
+// For hashing password
+const bcrypt = require('bcrypt')
+
 const stripe = require("stripe")("sk_test_51M7c2bCrl3dQ57EJMOlipKJpX43py1TqYR0wIuxSuUqrCNs5wm5ZZqbdfoC9Sg4pPnoRjyK555NERoxbngBBbRhS00TlyNUFoE");
 
 const jwt = require('jsonwebtoken');
@@ -102,7 +105,25 @@ async function run() {
         const communityPostsCollection = client.db('hello-Talk').collection('communityPostsCollection');
         const postlikes = client.db('hello-Talk').collection('postlikes');
         const postcomment = client.db('hello-Talk').collection('postcomment');
+        const notifyEmailCollection = client.db('hello-Talk').collection('notifyEmailCollection');
+        const messageCollection = client.db('hello-Talk').collection('messageCollection');
 
+
+        // CHAT SYSTEM START
+        app.post('/send-message', async (req, res) => {
+            const data = req.body;
+            const currentDate = new Date();
+            const msgData = {
+                sender: data.sender,
+                senderId: data.senderId,
+                recId: data.recId,
+                msg: data.msg,
+                date: currentDate
+            }
+            const result = await messageCollection.insertOne(msgData);
+            res.send({ result, msgData });
+        })
+        // CHAT SYSTEM END
 
 
         //payment system
