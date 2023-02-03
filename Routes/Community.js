@@ -4,8 +4,10 @@ require('dotenv').config()
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.6ke0m0t.mongodb.net/?retryWrites=true&w=majority`;
+console.log(uri)
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 console.log(uri)
+
 
 const communityPostsCollection = client.db('hello-Talk').collection('communityPostsCollection');
 const postlikes = client.db('hello-Talk').collection('postlikes');
@@ -96,9 +98,10 @@ router.get('/commentcount', async (req, res) => {
     res.send(communitybody)
 })
 
+
+
+
 // app.use("/community", routerCommunity)
-
-
 //post method community quesions or others
 // app.post('/addapost', async (req, res) => {
 //     const question = req.body;

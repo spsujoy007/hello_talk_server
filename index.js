@@ -7,14 +7,11 @@ const nodemailer = require('nodemailer');
 const mg = require('nodemailer-mailgun-transport');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
-// For hashing password
-const bcrypt = require('bcrypt')
 
 const stripe = require("stripe")("sk_test_51M7c2bCrl3dQ57EJMOlipKJpX43py1TqYR0wIuxSuUqrCNs5wm5ZZqbdfoC9Sg4pPnoRjyK555NERoxbngBBbRhS00TlyNUFoE");
 
 const jwt = require('jsonwebtoken');
 require('dotenv').config()
-
 const app = express()
 
 //port of the server
@@ -30,8 +27,8 @@ app.use(express.json())
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.6ke0m0t.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
-function notifyBlog(blog){
-    const {author_name, title, details} = blog
+function notifyBlog(blog) {
+    const { author_name, title, details } = blog
     // let transporter = nodemailer.createTransport({
     //     host: 'smtp.sendgrid.net',
     //     port: 587,
@@ -43,14 +40,14 @@ function notifyBlog(blog){
 
     const auth = {
         auth: {
-          api_key: process.env.EMAIL_API_PROVIDER,
-          domain: process.env.EMAIL_SEND_DOMAIN
+            api_key: process.env.EMAIL_API_PROVIDER,
+            domain: process.env.EMAIL_SEND_DOMAIN
         }
-      }
-      
+    }
+
     const transporter = nodemailer.createTransport(mg(auth));
 
-     transporter.sendMail({
+    transporter.sendMail({
         from: 'hellotalk2k23@gmail.com', // verified sender email
         to: "sujoypaul728@gmail.com", // recipient email
         subject: `New blog published by ${author_name}`, // Subject line
@@ -62,32 +59,32 @@ function notifyBlog(blog){
             </div>
             <h1 style="text: "center"><b>Thanks from (Hello Talk)</b></h1>
         `, // html body
-      }, function(error, info){
+    }, function (error, info) {
         if (error) {
-          console.log(error);
+            console.log(error);
         } else {
-          console.log('Email sent: ' + info.response);
+            console.log('Email sent: ' + info.response);
         }
-      });
+    });
 }
 
-function verifyJWT(req, res, next){
+function verifyJWT(req, res, next) {
     const authHeader = req.headers.authorization;
-    if(!authHeader){
-        return res.status(401).send({message: "unathorized access"})
+    if (!authHeader) {
+        return res.status(401).send({ message: "unathorized access" })
     }
     const token = authHeader.split(' ')[1];
-    jwt.verify(token, process.env.ACCESS_TOKEN, function(err, decoded){
-        if(err){
-            return res.status(401).send({message: "unathorized access"})
+    jwt.verify(token, process.env.ACCESS_TOKEN, function (err, decoded) {
+        if (err) {
+            return res.status(401).send({ message: "unathorized access" })
         }
         req.decoded = decoded;
         next()
     })
 }
 
-async function run(){
-    try{
+async function run() {
+    try {
         const coursesCollection = client.db('hello-Talk').collection('coursesCollection');
         const paymentsCollection = client.db('hello-Talk').collection('paymentsCollection');
         const levelsCollcetion = client.db('hello-Talk').collection('levelsCollcetion');
@@ -150,24 +147,24 @@ async function run(){
         });
 
         //get all the payment history
-        app.get('/payments', async(req, res) => {
+        app.get('/payments', async (req, res) => {
             const query = {};
             const result = await paymentsCollection.find(query).toArray();
             res.send(result)
         })
 
         //get all payments history with email
-        app.get('/userpayments', async(req, res) => {
+        app.get('/userpayments', async (req, res) => {
             const email = req.query.email
-            const query = {email: email};
+            const query = { email: email };
             const result = await paymentsCollection.find(query).toArray()
             res.send(result)
         })
 
         //get single payment history with email
-        app.get('/paymentbycourse', async(req, res) => {
+        app.get('/paymentbycourse', async (req, res) => {
             const id = req.query.id
-            const query = { _id: ObjectId(id)};
+            const query = { _id: ObjectId(id) };
             const result = await paymentsCollection.findOne(query)
             res.send(result)
         })
@@ -175,7 +172,7 @@ async function run(){
         //-----------------stripe end---------------
 
         //add new course post request
-        app.post('/course', async(req, res) => {
+        app.post('/course', async (req, res) => {
             const coursebody = req.body;
             const result = await coursesCollection.insertOne(coursebody);
             res.send(result)
@@ -191,13 +188,13 @@ async function run(){
         //get single course by id
         app.get('/course/:id', async (req, res) => {
             const id = req.params.id;
-            const query = { _id: ObjectId(id)}
+            const query = { _id: ObjectId(id) }
             const result = await coursesCollection.findOne(query);
             res.send(result);
         });
 
         //update the course
-        app.post('/upcourse', async(req, res) => {
+        app.post('/upcourse', async (req, res) => {
             const id = req.query.id;
             const coursedata = req.body;
             const {
@@ -210,8 +207,8 @@ async function run(){
                 module_links1,
             } = coursedata;
 
-            const filter = {_id: ObjectId(id)};
-            const options = {upsert: true};
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
             const updatedDoc = {
                 $set: {
                     title: title1,
@@ -229,16 +226,16 @@ async function run(){
         })
 
         //delete the single course by id
-        app.delete('/course/:id', async(req, res) => {
+        app.delete('/course/:id', async (req, res) => {
             const id = req.params.id;
-            const query = {_id: ObjectId(id)};
+            const query = { _id: ObjectId(id) };
             const result = await coursesCollection.deleteOne(query)
             res.send(result);
         })
 
         //\___________________all blog apis CRUD oparation start_________________/\\
         //post blog api
-        app.post('/blog', async(req, res) => {
+        app.post('/blog', async (req, res) => {
             const blog = req.body;
             const result = await blogsCollection.insertOne(blog)
             notifyBlog(blog)
@@ -262,13 +259,13 @@ async function run(){
         //get the single blog
         app.get('/blogs/:id', async (req, res) => {
             const id = req.params.id;
-            const query = { _id: ObjectId(id)};
+            const query = { _id: ObjectId(id) };
             const result = await blogsCollection.findOne(query);
             res.send(result)
         })
 
         //edit blogs by post
-        app.post('/upblog', async(req, res) => {
+        app.post('/upblog', async (req, res) => {
             const id = req.query.id;
             const blogdata = req.body;
             const {
@@ -284,8 +281,8 @@ async function run(){
                 age1
             } = blogdata;
 
-            const filter = {_id: ObjectId(id)};
-            const options = {upsert: true};
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
             const updatedDoc = {
                 $set: {
                     title: title1,
@@ -305,21 +302,21 @@ async function run(){
         });
 
         //notify email save api
-        app.post('/notifyblog', async(req, res) => {
+        app.post('/notifyblog', async (req, res) => {
             const email = req.body;
             const result = await notifyEmailCollection.insertOne(email)
             res.send(result)
         })
 
-        app.get('/notifyblog', async(req, res) => {
+        app.get('/notifyblog', async (req, res) => {
             const result = await notifyEmailCollection.find({}).toArray()
             res.send(result)
         })
 
         //delete blog 
-        app.delete('/blogs/:id', async(req, res) => {
+        app.delete('/blogs/:id', async (req, res) => {
             const id = req.params.id;
-            const query = { _id: ObjectId(id)}
+            const query = { _id: ObjectId(id) }
             const result = await blogsCollection.deleteOne(query);
             res.send(result)
         })
@@ -327,35 +324,35 @@ async function run(){
 
         //\_______________________Review API Start___________________________/\\
         //post review in database
-        app.post('/postreview', async(req, res) => {
+        app.post('/postreview', async (req, res) => {
             const review = req.body;
             const result = await reviewsCollection.insertOne(review);
             res.send(result)
         })
 
         //get the review api from mongodb
-        app.get('/reviews', async(req, res) => {
+        app.get('/reviews', async (req, res) => {
             const query = {};
             const result = await reviewsCollection.find(query).toArray();
             res.send(result);
         });
 
         //get single review of indecated user
-        app.get('/review', async(req, res) => {
+        app.get('/review', async (req, res) => {
             const reqemail = req.query.email;
-            const query = {email: reqemail}
-            if(reqemail){
+            const query = { email: reqemail }
+            if (reqemail) {
                 const result = await reviewsCollection.findOne(query);
                 res.send(result)
             }
-            else{
-                const error = {message: "no email found"}
+            else {
+                const error = { message: "no email found" }
             }
         })
         //\_______________________Review API End___________________________/\\
 
         //frequently asked question 
-        app.get('/faq', async ( req, res) => {
+        app.get('/faq', async (req, res) => {
             const query = {};
             const result = await faqCollection.find(query).toArray();
             res.send(result)
@@ -363,29 +360,29 @@ async function run(){
 
         //flashcardCollection 
         app.get('/flashcard', async (req, res) => {
-            const query = {}; 
+            const query = {};
             const result = await flashcardCollection.find(query).toArray();
             res.send(result)
         })
 
         //get quizzes api - checking age
-        app.get('/quizes', async(req, res) => {
+        app.get('/quizes', async (req, res) => {
             const age = req.query.age
             const query = {};
-            if(age === 'young'){
+            if (age === 'young') {
                 const result = await YquizCollection.find(query).toArray();
                 res.send(result)
             }
-            if(age === 'adult'){   
+            if (age === 'adult') {
                 const result = await AquizCollection.find(query).toArray();
                 res.send(result)
             }
-            else{
-                const result = {message: "No data found"}
+            else {
+                const result = { message: "No data found" }
                 res.send(result)
             }
         })
-        
+
         //get all the levels
         app.get('/levels', async (req, res) => {
             const query = {};
@@ -396,7 +393,7 @@ async function run(){
 
         app.get('/levels/:level', async (req, res) => {
             const level = req.params.level;
-            const query = {level: level};
+            const query = { level: level };
             const result = await levelsCollcetion.find(query).toArray()
             console.log(result)
             res.send(result)
@@ -404,30 +401,30 @@ async function run(){
 
         app.get('/level/:id', async (req, res) => {
             const id = req.params.id;
-            const query = {_id: ObjectId(id)};
+            const query = { _id: ObjectId(id) };
             const result = await levelsCollcetion.findOne(query)
             console.log(result)
             res.send(result)
         })
 
         //save the level when it complete in userCollection
-        app.post('/savelevel', async(req, res) => {
+        app.post('/savelevel', async (req, res) => {
             const newLevel = req.body;
-            const {completed_lv} = newLevel;
+            const { completed_lv } = newLevel;
             const email = req.query.email;
-            const filter = {email: email};
-            const options = {upsert: true};
+            const filter = { email: email };
+            const options = { upsert: true };
             const updatedDoc = {
                 $push: {
                     completed_lv: completed_lv
                 }
             };
-            const result = await userCollection.updateOne(filter, updatedDoc, options) 
+            const result = await userCollection.updateOne(filter, updatedDoc, options)
             res.send(result)
         });
 
         //check levels
-        app.get('/filterlevel', async(req, res) => {
+        app.get('/filterlevel', async (req, res) => {
             const email = req.query.email;
             const getUser = userCollection.find(user => user.email === email);
             const completedlv = getUser.completed_lv;
@@ -451,26 +448,26 @@ async function run(){
         })
 
         //post my profile
-        app.post('/user', async(req, res) => {
+        app.post('/user', async (req, res) => {
             const userdetail = req.body;
             const result = await userCollection.insertOne(userdetail);
             res.send(result)
         })
 
         //update my profile with all information
-        app.post('/upuser', async(req, res) => {
+        app.post('/upuser', async (req, res) => {
             const userbio = req.body;
-            const {name, age, education, district, country, number, email, realAge } = userbio;
+            const { name, age, education, district, country, number, email, realAge } = userbio;
             const useremail = req.query.email;
-            const filter = {email: useremail};
-            const options = {upsert: true}
+            const filter = { email: useremail };
+            const options = { upsert: true }
             const updateDoc = {
-                $set:{
+                $set: {
                     name,
                     age,
                     realAge,
                     education,
-                    district, 
+                    district,
                     country,
                     number,
                     email
@@ -482,15 +479,15 @@ async function run(){
         })
 
         //get all the users
-        app.get('/users', async(req, res) => {
+        app.get('/users', async (req, res) => {
             const query = {};
             const result = await usersCollection.find(query).toArray();
-            res.send(result) 
+            res.send(result)
         })
 
 
         //get all the users saved on usercollection
-        app.get('/allusers', async(req, res) => {
+        app.get('/allusers', async (req, res) => {
             const query = {};
             const result = await userCollection.find(query).toArray();
             res.send(result)
@@ -499,16 +496,16 @@ async function run(){
         //get single user api
         app.get('/profile', async (req, res) => {
             const email = req.query.email;
-            const query = {email: email}
+            const query = { email: email }
             const result = await userCollection.findOne(query);
-            res.send(result) 
+            res.send(result)
         });
 
         //make a user to admin
-        app.put('/makeadmin', async(req, res) => {
+        app.put('/makeadmin', async (req, res) => {
             const email = req.query.email;
-            const filter = {email: email}
-            const options = {upsert: true};
+            const filter = { email: email }
+            const options = { upsert: true };
             const updatedDoc = {
                 $set: {
                     role: "admin"
@@ -523,15 +520,15 @@ async function run(){
             const email = req.query.email;
             const mygem = req.body;
             //get the new gems
-            const {mGem} = mygem
-            
+            const { mGem } = mygem
+
             //find for get the user of previous gems
-            const getUser = await userCollection.findOne({email: email})
-            const {gems} =  getUser;
-            
-            const filter = {email: email};
-            const options = {upsert: true};
-            const updatedDoc= {
+            const getUser = await userCollection.findOne({ email: email })
+            const { gems } = getUser;
+
+            const filter = { email: email };
+            const options = { upsert: true };
+            const updatedDoc = {
                 $set: {
                     gems: gems + mGem
                 }
@@ -542,9 +539,9 @@ async function run(){
         })
 
         //delete an user from database
-        app.delete('/profile/:id', async(req, res) => {
+        app.delete('/profile/:id', async (req, res) => {
             const id = req.params.id;
-            const query = {_id: ObjectId(id)};
+            const query = { _id: ObjectId(id) };
             const result = await userCollection.deleteOne(query);
             res.send(result);
         });
@@ -558,29 +555,29 @@ async function run(){
         })
 
         //get single teacher
-        app.get('/teacher/:id', async(req, res) => {
+        app.get('/teacher/:id', async (req, res) => {
             const id = req.params.id;
-            const query = { _id: ObjectId(id)};
+            const query = { _id: ObjectId(id) };
             const result = await teachersCollection.findOne(query);
             res.send(result);
         });
 
         //POST API add teachere api
-        app.post('/addteacher', async(req, res) => {
+        app.post('/addteacher', async (req, res) => {
             const teacherBody = req.body;
             const result = await teachersCollection.insertOne(teacherBody)
             res.send(result)
         })
 
         //delete teacher api
-        app.delete('/removeteacher', async(req, res) => {
+        app.delete('/removeteacher', async (req, res) => {
             const id = req.query.id;
-            const query = {_id: ObjectId(id)}
+            const query = { _id: ObjectId(id) }
             const result = await teachersCollection.deleteOne(query)
             res.send(result)
         })
 
-        app.post('/updateteacher', async(req, res) => {
+        app.post('/updateteacher', async (req, res) => {
             const id = req.query.id;
             const teacherDetail = req.body;
             const {
@@ -590,8 +587,8 @@ async function run(){
                 date1,
                 qualification1,
             } = teacherDetail;
-            const filter = {_id: ObjectId(id)};
-            const options = {upsert: true};
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
             const updatedDoc = {
                 $set: {
                     name: name1,
@@ -610,7 +607,7 @@ async function run(){
 
     }
 
-    finally{
+    finally {
 
     }
 }
@@ -619,7 +616,7 @@ run().catch(err => {
 })
 
 app.get('/', (req, res) => {
-  res.send(`
+    res.send(`
   <div style="text-align: center; font-family: arial; padding: 0 30px">
   <img src="https://hello-talk-client.vercel.app/Logo2.png" alt="Hello Talk logo" style="width: 200px; margin: 20px 0;">
   <h1 style="font-size: 3em; margin: 10px 0;">Welcome to Hello Talk Server!</h1>
@@ -630,7 +627,7 @@ app.get('/', (req, res) => {
 })
 
 app.listen(port, () => {
-  console.log(`Hello talk app listening on port ${port}`)
+    console.log(`Hello talk app listening on port ${port}`)
 })
 
 //Export the express api
