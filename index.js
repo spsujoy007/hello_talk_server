@@ -1,11 +1,21 @@
 const express = require('express')
 const cors = require('cors');
+const routerCommunity = require("./Routes/Community")
+
+//nodemailer
+const nodemailer = require('nodemailer');
+const mg = require('nodemailer-mailgun-transport');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+
+// For hashing password
+const bcrypt = require('bcrypt')
+
+const stripe = require("stripe")("sk_test_51M7c2bCrl3dQ57EJMOlipKJpX43py1TqYR0wIuxSuUqrCNs5wm5ZZqbdfoC9Sg4pPnoRjyK555NERoxbngBBbRhS00TlyNUFoE");
+
 const jwt = require('jsonwebtoken');
 require('dotenv').config()
+
 const app = express()
-const stripe = require("stripe")("sk_test_51M7c2bCrl3dQ57EJMOlipKJpX43py1TqYR0wIuxSuUqrCNs5wm5ZZqbdfoC9Sg4pPnoRjyK555NERoxbngBBbRhS00TlyNUFoE");
-const routerCommunity = require("./Routes/Community")
 
 //port of the server
 const port = process.env.PORT || 5000;
@@ -19,6 +29,47 @@ app.use(express.json())
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.6ke0m0t.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+
+function notifyBlog(blog) {
+    const { author_name, title, details } = blog
+    // let transporter = nodemailer.createTransport({
+    //     host: 'smtp.sendgrid.net',
+    //     port: 587,
+    //     auth: {
+    //         user: "apikey",
+    //         pass: process.env.SENDGRID_API_KEY
+    //     }
+    //  })
+
+    const auth = {
+        auth: {
+            api_key: process.env.EMAIL_API_PROVIDER,
+            domain: process.env.EMAIL_SEND_DOMAIN
+        }
+    }
+
+    const transporter = nodemailer.createTransport(mg(auth));
+
+    transporter.sendMail({
+        from: 'hellotalk2k23@gmail.com', // verified sender email
+        to: "sujoypaul728@gmail.com", // recipient email
+        subject: `New blog published by ${author_name}`, // Subject line
+        // text: "Hello world!", // plain text body
+        html: `
+            <div>
+                <h3>${title}</h3>
+                <p>${details}</p>
+            </div>
+            <h1 style="text: "center"><b>Thanks from (Hello Talk)</b></h1>
+        `, // html body
+    }, function (error, info) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+}
 
 function verifyJWT(req, res, next) {
     const authHeader = req.headers.authorization;
@@ -38,6 +89,7 @@ function verifyJWT(req, res, next) {
 async function run() {
     try {
         const coursesCollection = client.db('hello-Talk').collection('coursesCollection');
+        const paymentsCollection = client.db('hello-Talk').collection('paymentsCollection');
         const levelsCollcetion = client.db('hello-Talk').collection('levelsCollcetion');
         const blogsCollection = client.db('hello-Talk').collection('blogsCollection');
         const usersCollection = client.db('hello-Talk').collection('usersCollection');
@@ -48,6 +100,25 @@ async function run() {
         const faqCollection = client.db('hello-Talk').collection('faqCollection');
         const flashcardCollection = client.db('hello-Talk').collection('flashcardCollection');
         const teachersCollection = client.db('hello-Talk').collection('teachersCollection');
+        const notifyEmailCollection = client.db('hello-Talk').collection('notifyEmailCollection');
+        const messageCollection = client.db('hello-Talk').collection('messageCollection');
+
+
+        // CHAT SYSTEM START
+        app.post('/send-message', async (req, res) => {
+            const data = req.body;
+            const currentDate = new Date();
+            const msgData = {
+                sender: data.sender,
+                senderId: data.senderId,
+                recId: data.recId,
+                msg: data.msg,
+                date: currentDate
+            }
+            const result = await messageCollection.insertOne(msgData);
+            res.send({ result, msgData });
+        })
+        // CHAT SYSTEM END
 
 
         //payment system
@@ -69,6 +140,7 @@ async function run() {
             });
         });
 
+        //insert new payment in collection
         app.post("/payments", async (req, res) => {
             const payments = req.body
             console.log(payments)
@@ -77,8 +149,37 @@ async function run() {
 
         });
 
+        //get all the payment history
+        app.get('/payments', async (req, res) => {
+            const query = {};
+            const result = await paymentsCollection.find(query).toArray();
+            res.send(result)
+        })
+
+        //get all payments history with email
+        app.get('/userpayments', async (req, res) => {
+            const email = req.query.email
+            const query = { email: email };
+            const result = await paymentsCollection.find(query).toArray()
+            res.send(result)
+        })
+
+        //get single payment history with email
+        app.get('/paymentbycourse', async (req, res) => {
+            const id = req.query.id
+            const query = { _id: ObjectId(id) };
+            const result = await paymentsCollection.findOne(query)
+            res.send(result)
+        })
 
         //-----------------stripe end---------------
+
+        //add new course post request
+        app.post('/course', async (req, res) => {
+            const coursebody = req.body;
+            const result = await coursesCollection.insertOne(coursebody);
+            res.send(result)
+        })
 
         //get courses data from mongodb
         app.get('/courses', async (req, res) => {
@@ -87,6 +188,7 @@ async function run() {
             res.send(result);
         });
 
+        //get single course by id
         app.get('/course/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) }
@@ -95,22 +197,38 @@ async function run() {
         });
 
         //update the course
-        app.post('/course', async (req, res) => {
+        app.post('/upcourse', async (req, res) => {
             const id = req.query.id;
             const coursedata = req.body;
-            const { picture, title, details, price, date, offer_price } = coursedata;
+            const {
+                title1,
+                picture1,
+                details1,
+                date1,
+                price1,
+                offer_price1,
+                module_links1,
+            } = coursedata;
 
             const filter = { _id: ObjectId(id) };
             const options = { upsert: true };
             const updatedDoc = {
                 $set: {
-                    picture, title, details, price, date, offer_price
+                    title: title1,
+                    picture: picture1,
+                    details: details1,
+                    date: date1,
+                    price: price1,
+                    offer_price: offer_price1,
+                    module_links: module_links1
                 }
             }
+
             const result = await coursesCollection.updateOne(filter, updatedDoc, options)
             res.send(result)
         })
 
+        //delete the single course by id
         app.delete('/course/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
@@ -123,6 +241,7 @@ async function run() {
         app.post('/blog', async (req, res) => {
             const blog = req.body;
             const result = await blogsCollection.insertOne(blog)
+            notifyBlog(blog)
             res.send(result)
         })
 
@@ -149,18 +268,52 @@ async function run() {
         })
 
         //edit blogs by post
-        app.post('/upblog/:id', async (req, res) => {
-            const id = req.params.id;
+        app.post('/upblog', async (req, res) => {
+            const id = req.query.id;
             const blogdata = req.body;
+            const {
+                title1,
+                details1,
+                date1,
+                author_name1,
+                author_img1,
+                image1,
+                tag1,
+                package1,
+                gems1,
+                age1
+            } = blogdata;
+
             const filter = { _id: ObjectId(id) };
             const options = { upsert: true };
             const updatedDoc = {
                 $set: {
-
+                    title: title1,
+                    details: details1,
+                    date: date1,
+                    author_name: author_name1,
+                    author_img: author_img1,
+                    image: image1,
+                    tag: tag1,
+                    package: package1,
+                    gems: gems1,
+                    age: age1
                 }
             }
             const result = await blogsCollection.updateOne(filter, updatedDoc, options)
+            res.send(result)
+        });
 
+        //notify email save api
+        app.post('/notifyblog', async (req, res) => {
+            const email = req.body;
+            const result = await notifyEmailCollection.insertOne(email)
+            res.send(result)
+        })
+
+        app.get('/notifyblog', async (req, res) => {
+            const result = await notifyEmailCollection.find({}).toArray()
+            res.send(result)
         })
 
         //delete blog 
@@ -172,6 +325,7 @@ async function run() {
         })
         //\__________________________blogs end______________________________/\\
 
+        //\_______________________Review API Start___________________________/\\
         //post review in database
         app.post('/postreview', async (req, res) => {
             const review = req.body;
@@ -198,6 +352,7 @@ async function run() {
                 const error = { message: "no email found" }
             }
         })
+        //\_______________________Review API End___________________________/\\
 
         //frequently asked question 
         app.get('/faq', async (req, res) => {
@@ -410,8 +565,47 @@ async function run() {
             res.send(result);
         });
 
-        // Community Page api
+        //POST API add teachere api
+        app.post('/addteacher', async (req, res) => {
+            const teacherBody = req.body;
+            const result = await teachersCollection.insertOne(teacherBody)
+            res.send(result)
+        })
 
+        //delete teacher api
+        app.delete('/removeteacher', async (req, res) => {
+            const id = req.query.id;
+            const query = { _id: ObjectId(id) }
+            const result = await teachersCollection.deleteOne(query)
+            res.send(result)
+        })
+
+        app.post('/updateteacher', async (req, res) => {
+            const id = req.query.id;
+            const teacherDetail = req.body;
+            const {
+                name1,
+                image1,
+                details1,
+                date1,
+                qualification1,
+            } = teacherDetail;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updatedDoc = {
+                $set: {
+                    name: name1,
+                    image: image1,
+                    details: details1,
+                    date: date1,
+                    qualification: qualification1
+                }
+            }
+            const result = await teachersCollection.updateOne(filter, updatedDoc, options)
+            res.send(result)
+        })
+
+        //community pages 
         app.use("/community", routerCommunity)
 
     }
@@ -426,14 +620,14 @@ run().catch(err => {
 
 app.get('/', (req, res) => {
     res.send(`
-    <p>
-        <h1>Welcome to Hello_talk Server 🎉</h1>
-        <h3>Let's do it</h3>
-    </p>
+  <div style="text-align: center; font-family: arial; padding: 0 30px">
+  <img src="https://hello-talk-client.vercel.app/Logo2.png" alt="Hello Talk logo" style="width: 200px; margin: 20px 0;">
+  <h1 style="font-size: 3em; margin: 10px 0;">Welcome to Hello Talk Server!</h1>
+  <p style="font-size: 1.5em; margin: 10px 0;">Hello Talk is an English learning platform, developed by our team: <span style="color: green; font-weight: bold">Afnan Ferdousi, Al Galib, Mosharaf, Shaimon, Kasib and Sujoy Paul</span>.</p>
+  <a target="_blank" href="https://hello-talk-client.vercel.app" style="font-size: 1.5em; margin: 10px 0;">Visit our live website</a>
+</div>
   `)
 })
-
-
 
 app.listen(port, () => {
     console.log(`Hello talk app listening on port ${port}`)
