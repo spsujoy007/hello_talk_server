@@ -48,7 +48,7 @@ function notifyBlog(blog){
 
      transporter.sendMail({
         from: 'hellotalk2k23@gmail.com', // verified sender email
-        to: "sujoypaul728@gmail", // recipient email
+        to: "sujoypaul728@gmail.com", // recipient email
         subject: `New blog published by ${author_name}`, // Subject line
         // text: "Hello world!", // plain text body
         html: `
