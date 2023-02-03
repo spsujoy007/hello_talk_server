@@ -2,6 +2,9 @@ const express = require('express')
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
+// For hashing password
+const bcrypt = require('bcrypt')
+
 const stripe = require("stripe")("sk_test_51M7c2bCrl3dQ57EJMOlipKJpX43py1TqYR0wIuxSuUqrCNs5wm5ZZqbdfoC9Sg4pPnoRjyK555NERoxbngBBbRhS00TlyNUFoE");
 
 const jwt = require('jsonwebtoken');
@@ -72,6 +75,8 @@ async function run(){
             res.send({ result, msgData });
         })
         // CHAT SYSTEM END
+
+        
 
 
 
