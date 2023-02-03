@@ -1,15 +1,20 @@
 const express = require("express")
 const router = express.Router()
+
+
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-
-
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.6ke0m0t.mongodb.net/?retryWrites=true&w=majority`;
+console.log(uri)
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+
+
+
 
 const communityPostsCollection = client.db('hello-Talk').collection('communityPostsCollection');
 const postlikes = client.db('hello-Talk').collection('postlikes');
 const postcomment = client.db('hello-Talk').collection('postcomment');
 const topAuthors = client.db('hello-Talk').collection('topAuthors');
+
 
 
 router.post('/addapost', async (req, res) => {
@@ -67,13 +72,14 @@ router.get('/like', async (req, res) => {
 router.delete('/like/:id', async (req, res) => {
     const id = req.params.id;
     const query = { pid: id };
+    // console.log(query)
     const result = await postlikes.deleteOne(query);
     res.send(result);
 });
 
 router.post('/topAuthors', async (req, res) => {
     const topAuthor = req.body;
-    console.log(topAuthor)
+    // console.log(topAuthor)
     const query = {};
     const result2 = await topAuthors.deleteMany(query);
     const result = await topAuthors.insertMany(topAuthor);
@@ -93,6 +99,8 @@ router.get('/commentcount', async (req, res) => {
     const communitybody = await postcomment.find(query).toArray()
     res.send(communitybody)
 })
+
+// app.use("/community", routerCommunity)
 
 
 //post method community quesions or others
