@@ -19,7 +19,6 @@
   },
   "homepage": "https://github.com/the-code-wizards/hello_talk_server#readme",
   "dependencies": {
-    "bcrypt": "^5.1.0",
     "body-parser": "^1.20.1",
     "concurrently": "^7.6.0",
     "cookie-parser": "^1.4.6",
@@ -29,9 +28,9 @@
     "formidable": "^2.1.1",
     "jsonwebtoken": "^9.0.0",
     "mongodb": "^4.13.0",
-    "validator": "^13.7.0",
     "nodemailer": "^6.9.1",
     "nodemailer-mailgun-transport": "^2.1.5",
-    "stripe": "^11.7.0"
+    "stripe": "^11.7.0",
+    "validator": "^13.7.0"
   }
 }
