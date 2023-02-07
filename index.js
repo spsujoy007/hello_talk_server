@@ -477,6 +477,21 @@ async function run() {
             res.send(result)
         })
 
+        // set the photo of profile 
+        app.post('/upimage', async(req, res) => {
+            const image = req.body;
+            const {photoURL} = image;
+            const filter = req.query.email;
+            const options = {upsert: true}
+            const updatedDoc = {
+                $set: {
+                    photoURL: photoURL
+                }
+            }
+            const result = await userCollection.updateOne(filter, updatedDoc, options)
+            res.send(result)
+        })
+
         //get all the users
         app.get('/users', async (req, res) => {
             const query = {};
