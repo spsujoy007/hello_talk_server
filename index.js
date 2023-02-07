@@ -492,6 +492,12 @@ async function run() {
             res.send(result)
         })
 
+        app.get('/sortusers', async (req, res) => {
+            const query = {};
+            const result = await userCollection.find(query).sort({role: "admin"}).toArray();
+            res.send(result)
+        })
+
         //get single user api
         app.get('/profile', async (req, res) => {
             const email = req.query.email;
@@ -617,7 +623,7 @@ run().catch(err => {
 app.get('/', (req, res) => {
     res.send(`
   <div style="text-align: center; font-family: arial; padding: 0 30px">
-  <img src="https://hello-talk-client.vercel.app/Logo2.png" alt="Hello Talk logo" style="width: 200px; margin: 20px 0;">
+  <img src="https://i.ibb.co/9sD5w3t/favicon.png" alt="Hello Talk logo" style="width: 200px; margin: 20px 0;">
   <h1 style="font-size: 3em; margin: 10px 0;">Welcome to Hello Talk Server!</h1>
   <p style="font-size: 1.5em; margin: 10px 0;">Hello Talk is an English learning platform, developed by our team: <span style="color: green; font-weight: bold">Afnan Ferdousi, Al Galib, Mosharaf, Shaimon, Kasib and Sujoy Paul</span>.</p>
   <a target="_blank" href="https://hello-talk-client.vercel.app" style="font-size: 1.5em; margin: 10px 0;">Visit our live website</a>
