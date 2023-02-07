@@ -28,16 +28,7 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@clu
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 function notifyBlog(blog) {
-    const { author_name, title, details } = blog
-    // let transporter = nodemailer.createTransport({
-    //     host: 'smtp.sendgrid.net',
-    //     port: 587,
-    //     auth: {
-    //         user: "apikey",
-    //         pass: process.env.SENDGRID_API_KEY
-    //     }
-    //  })
-
+    const { author_name, title, details, image } = blog
     const auth = {
         auth: {
             api_key: process.env.EMAIL_API_PROVIDER,
@@ -48,16 +39,24 @@ function notifyBlog(blog) {
     const transporter = nodemailer.createTransport(mg(auth));
 
     transporter.sendMail({
-        from: 'hellotalk2k23@gmail.com', // verified sender email
-        to: "sujoypaul728@gmail.com", // recipient email
+        from: '"Hello Talk" <hellotalk2k23@gmail.com>', // verified sender email
+        to: `sujoypaul728@gmail.com, afnanferdousi550@gmail.com, alshaimon968@gmail.com 
+        , kasib.md.chy@gmail.com, algalib1001@gmail.com`, // recipient email
         subject: `New blog published by ${author_name}`, // Subject line
         // text: "Hello world!", // plain text body
         html: `
-            <div>
-                <h3>${title}</h3>
-                <p>${details}</p>
-            </div>
-            <h1 style="text: "center"><b>Thanks from (Hello Talk)</b></h1>
+        <div style="background-color: #f2f2f2; padding: 15px; text-align: center; font-family: arial;">
+        <div style="background-color: #ffffff; padding: 13px; border-radius: 10px;">
+          <img style="width: 100%; border-radius: 15px" src=${image} style="display: block; margin: 0 auto 20px auto;" />
+          <h2 style="color: #333;">${title}</h2>
+          <p style="color: #333; font-size: 16px;">${details.slice(0, 150)}...</p>
+          <div>
+              <a href="https://hello-talk-client.vercel.app/blogs" target="_blank"> <button style="background-color: #61B800; color: white; padding: 13px 35px; border: 0; outline: none; border-radius: 14px; font-size: 18px; text-transform: uppercase;">See blogs</button> </a>
+          </div>
+        </div>
+        <h3 style="color: #333; margin-top: 20px; margin-botom: 5px; text-align: center;">Thanks from (Hello Talk)</h3>
+        <p>visit now: <a style="color: #61B800" href="https://hello-talk-client.vercel.app/blogs">https://hello-talk-client.vercel.app/blogs</a> </>
+      </div>
         `, // html body
     }, function (error, info) {
         if (error) {
@@ -493,6 +492,12 @@ async function run() {
             res.send(result)
         })
 
+        app.get('/sortusers', async (req, res) => {
+            const query = {};
+            const result = await userCollection.find(query).sort({role: "admin"}).toArray();
+            res.send(result)
+        })
+
         //get single user api
         app.get('/profile', async (req, res) => {
             const email = req.query.email;
@@ -618,7 +623,7 @@ run().catch(err => {
 app.get('/', (req, res) => {
     res.send(`
   <div style="text-align: center; font-family: arial; padding: 0 30px">
-  <img src="https://hello-talk-client.vercel.app/Logo2.png" alt="Hello Talk logo" style="width: 200px; margin: 20px 0;">
+  <img src="https://i.ibb.co/9sD5w3t/favicon.png" alt="Hello Talk logo" style="width: 200px; margin: 20px 0;">
   <h1 style="font-size: 3em; margin: 10px 0;">Welcome to Hello Talk Server!</h1>
   <p style="font-size: 1.5em; margin: 10px 0;">Hello Talk is an English learning platform, developed by our team: <span style="color: green; font-weight: bold">Afnan Ferdousi, Al Galib, Mosharaf, Shaimon, Kasib and Sujoy Paul</span>.</p>
   <a target="_blank" href="https://hello-talk-client.vercel.app" style="font-size: 1.5em; margin: 10px 0;">Visit our live website</a>
