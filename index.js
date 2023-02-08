@@ -114,6 +114,25 @@ async function run() {
             const result = await messageCollection.insertOne(msgData);
             res.send({ result, msgData });
         })
+
+        app.get('/get-messages/:id/:myId', async (req, res) => {
+            const id = req.params.id;
+            const myId = req.params.myId;
+            try {
+                const allMessages = await messageCollection.find({}).toArray();
+                const filtered = allMessages.filter(
+                    m => ((m.senderId === myId && m.recId === id) || (m.senderId === id && m.recId === myId))
+                );
+                if (!filtered.length) {
+                    console.error('No data matching the filter condition.');
+                    return res.status(404).send({ error: 'No data matching the filter condition.' });
+                }
+                res.send(filtered);
+                console.log('msg=>', filtered);
+            } catch (e) {
+                console.log(e);
+            }
+        });
         // CHAT SYSTEM END
 
 
