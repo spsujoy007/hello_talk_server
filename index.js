@@ -481,14 +481,16 @@ async function run() {
         app.post('/upimage', async(req, res) => {
             const image = req.body;
             const {photoURL} = image;
-            const filter = req.query.email;
+            const email = req.query.email;
+            const filter = {email: email}
             const options = {upsert: true}
             const updatedDoc = {
                 $set: {
                     photoURL: photoURL
                 }
             }
-            const result = await userCollection.updateOne(filter, updatedDoc, options)
+            const result = userCollection.updateOne(filter, updatedDoc, options)
+            console.log(filter)
             res.send(result)
         })
 
