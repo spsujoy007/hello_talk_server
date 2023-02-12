@@ -658,6 +658,19 @@ async function run() {
             res.send(result)
         })
 
+        //terms and privacy start ____________________________
+        app.post('/addterms', async(req, res) => {
+            const termsBody = req.body;
+            const result = await termsCollection.insertOne(termsBody);
+            res.send(result)
+        })
+
+        //get the terms value;
+        app.get('/terms', async(req, res) => {
+            const result = await privacyCollection.find({}).toArray();
+            res.send(result)
+        })
+
 
         //community pages 
         app.use("/community", routerCommunity)
