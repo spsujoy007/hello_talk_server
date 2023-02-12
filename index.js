@@ -99,6 +99,7 @@ async function run() {
         const notifyEmailCollection = client.db('hello-Talk').collection('notifyEmailCollection');
         const messageCollection = client.db('hello-Talk').collection('messageCollection');
         const termsCollection = client.db('hello-Talk').collection('terms');
+        const privacyCollection = client.db('hello-Talk').collection('privacy');
 
 
         // CHAT SYSTEM START
@@ -645,23 +646,15 @@ async function run() {
         })
 
         //terms and privacy start ____________________________
-        app.post('/addterms', async(req, res) => {
-            const termsbody = req.body;
-            const {} = termsbody;
-            const filter = {_id: ObjectId(id)};
-            const options ={upsert: true};
-            const updatedDoc = {
-                $set: {
-
-                }
-            }
-            const result = await termsCollection.updateOne(filter, updatedDoc, options);
+        app.post('/addprivacy', async(req, res) => {
+            const privacybody = req.body;
+            const result = await privacyCollection.insertOne(privacybody);
             res.send(result)
         })
 
         //get the terms value;
-        app.get('/terms', async(req, res) => {
-            const result = await termsCollection.find({}).toArray();
+        app.get('/privacy', async(req, res) => {
+            const result = await privacyCollection.find({}).toArray();
             res.send(result)
         })
 
