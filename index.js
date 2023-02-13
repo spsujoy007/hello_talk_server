@@ -683,12 +683,35 @@ async function run() {
         //add connection start
         app.post('/connect', async(req, res) => {
             const connectBody = req.body;
-            const result = await connectionsCollection.insertOne(connectBody)
+            const result = await connectionsCollection.insertOne(connectBody);
             res.send(result)
         })
 
         app.get('/connection', async(req, res)=> {
             const result = await connectionsCollection.find({}).toArray()
+            res.send(result)
+        })
+
+        //get the freind request
+        app.get('/requested', async(req, res) => {
+            const reciverEmail = req.query.email;
+            const query = {reciverEmail:reciverEmail, status: "pending"}
+            const result = await connectionsCollection.find(query).toArray()
+            res.send(result)
+            
+        })
+
+        app.put('/accepted', async(req, res) => {
+            const senderEmail = req.query.senederEmail;
+            const reciverEmail = req.query.reciverEmail;
+            const filter = {senderEmail: senderEmail, reciverEmail: reciverEmail};
+            const options = {upsert: true}
+            const updatedDoc = {
+                $set: {
+                    status: 'connected'
+                }
+            }
+            const result = await connectionsCollection.updateOne(filter, updatedDoc, options)
             res.send(result)
         })
     }
