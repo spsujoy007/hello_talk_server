@@ -667,7 +667,7 @@ async function run() {
 
         //get the terms value;
         app.get('/terms', async(req, res) => {
-            const result = await privacyCollection.find({}).toArray();
+            const result = await termsCollection.find({}).toArray();
             res.send(result)
         })
 
