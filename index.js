@@ -100,6 +100,7 @@ async function run() {
         const messageCollection = client.db('hello-Talk').collection('messageCollection');
         const termsCollection = client.db('hello-Talk').collection('terms');
         const privacyCollection = client.db('hello-Talk').collection('privacy');
+        const connectionsCollection = client.db('hello-Talk').collection('connection');
 
 
         // CHAT SYSTEM START
@@ -679,6 +680,17 @@ async function run() {
         //community pages 
         app.use("/community", routerCommunity)
 
+        //add connection start
+        app.post('/connect', async(req, res) => {
+            const connectBody = req.body;
+            const result = await connectionsCollection.insertOne(connectBody)
+            res.send(result)
+        })
+
+        app.get('/connection', async(req, res)=> {
+            const result = await connectionsCollection.find({}).toArray()
+            res.send(result)
+        })
     }
 
     finally {
