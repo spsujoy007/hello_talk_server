@@ -35,6 +35,10 @@ router.post('/addapost', async (req, res) => {
 
 router.post('/postlike', async (req, res) => {
     const likebody = req.body;
+    const query = { email: likebody.email }
+    const likedata = await postlikes.find(query).toArray()
+    // console.log(likedata.length)
+    if (likedata.length) return res.send({ k: "S" })
     const result = await postlikes.insertOne(likebody);
     res.send(result)
 })
@@ -71,9 +75,9 @@ router.get('/like', async (req, res) => {
 router.delete('/like/:id', async (req, res) => {
     const id = req.params.id;
     const query = { pid: id };
-    // console.log(query)
-    const result = await postlikes.deleteOne(query);
-    res.send(result);
+    console.log(query)
+    // const result = await postlikes.deleteOne(query);
+    // res.send(result);
 });
 
 router.post('/topAuthors', async (req, res) => {
@@ -125,6 +129,27 @@ router.delete('/Clike/:id', async (req, res) => {
     const result = await likeOnComment.deleteOne(query);
     res.send(result);
 });
+
+router.delete('/Clike/:id', async (req, res) => {
+    const id = req.params.id;
+    const query = { cid: id };
+    // console.log(query)
+    const result = await likeOnComment.deleteOne(query);
+    res.send(result);
+});
+
+router.delete('/deleteComment/:id', async (req, res) => {
+    const id = req.params.id;
+    const query = { _id: ObjectId(id) };
+    // console.log(query)
+    const result = await postcomment.deleteOne(query);
+    res.send(result);
+});
+
+
+
+
+
 
 
 
