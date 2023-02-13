@@ -98,6 +98,8 @@ async function run() {
         const teachersCollection = client.db('hello-Talk').collection('teachersCollection');
         const notifyEmailCollection = client.db('hello-Talk').collection('notifyEmailCollection');
         const messageCollection = client.db('hello-Talk').collection('messageCollection');
+        const termsCollection = client.db('hello-Talk').collection('terms');
+        const privacyCollection = client.db('hello-Talk').collection('privacy');
 
 
         // CHAT SYSTEM START
@@ -642,6 +644,33 @@ async function run() {
             const result = await teachersCollection.updateOne(filter, updatedDoc, options)
             res.send(result)
         })
+
+        //terms and privacy start ____________________________
+        app.post('/addprivacy', async(req, res) => {
+            const privacybody = req.body;
+            const result = await privacyCollection.insertOne(privacybody);
+            res.send(result)
+        })
+
+        //get the terms value;
+        app.get('/privacy', async(req, res) => {
+            const result = await privacyCollection.find({}).toArray();
+            res.send(result)
+        })
+
+        //terms and privacy start ____________________________
+        app.post('/addterms', async(req, res) => {
+            const termsBody = req.body;
+            const result = await termsCollection.insertOne(termsBody);
+            res.send(result)
+        })
+
+        //get the terms value;
+        app.get('/terms', async(req, res) => {
+            const result = await privacyCollection.find({}).toArray();
+            res.send(result)
+        })
+
 
         //community pages 
         app.use("/community", routerCommunity)
