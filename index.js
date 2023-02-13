@@ -123,11 +123,14 @@ async function run() {
             try {
                 const allMessages = await messageCollection.find({}).toArray();
                 const filtered = allMessages.filter(
-                    m => ((m.senderId === myId && m.recId === id) || (m.senderId === id && m.recId === myId))
+                   (m) => {
+                    return(
+                        (m.senderId === myId && m.recId === id) || (m.senderId === id && m.recId === myId)
+                    )
+                    }
                 );
                 if (!filtered.length) {
                     console.error('No data matching the filter condition.');
-                    return res.status(404).send({ error: 'No data matching the filter condition.' });
                 }
                 res.send(filtered);
                 console.log('msg=>', filtered);
@@ -135,6 +138,7 @@ async function run() {
                 console.log(e);
             }
         });
+
         // CHAT SYSTEM END
 
 
