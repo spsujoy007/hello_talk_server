@@ -82,6 +82,7 @@ function verifyJWT(req, res, next) {
     })
 }
 
+
 async function run() {
     try {
         const coursesCollection = client.db('hello-Talk').collection('coursesCollection');
@@ -101,6 +102,7 @@ async function run() {
         const termsCollection = client.db('hello-Talk').collection('terms');
         const privacyCollection = client.db('hello-Talk').collection('privacy');
         const connectionsCollection = client.db('hello-Talk').collection('connection');
+        const friendsCollection = client.db('hello-Talk').collection('friends');
 
 
         // CHAT SYSTEM START
@@ -698,20 +700,63 @@ async function run() {
             const query = {reciverEmail:reciverEmail, status: "pending"}
             const result = await connectionsCollection.find(query).toArray()
             res.send(result)
-            
         })
 
-        app.put('/accepted', async(req, res) => {
-            const senderEmail = req.query.senederEmail;
-            const reciverEmail = req.query.reciverEmail;
-            const filter = {senderEmail: senderEmail, reciverEmail: reciverEmail};
-            const options = {upsert: true}
-            const updatedDoc = {
-                $set: {
-                    status: 'connected'
-                }
+        app.post('/accepted', async(req, res) => {
+            const body = req.body;
+            const id = body.id;
+            const query = {_id: ObjectId(id)};
+            const result1 = await connectionsCollection.deleteOne(query);
+            const acceptbody = {
+                senderImg: body.senderImg,
+                senderEmail: body.senderEmail,
+                senderName: body.senderName,
+                reciverEmail: body.reciverEmail,
+                reciverImg: body.reciverImg,
+                reciverName: body.reciverName,
             }
-            const result = await connectionsCollection.updateOne(filter, updatedDoc, options)
+            const result2 = await friendsCollection.insertOne(acceptbody);
+            const acceptBody2 = {
+                senderImg: body.reciverImg,
+                senderEmail: body.reciverEmail,
+                senderName: body.reciverName,
+                reciverEmail: body.senderEmail,
+                reciverImg: body.senderImg,
+                reciverName: body.senderName,
+            }
+
+            const result3 = await friendsCollection.insertOne(acceptBody2);
+
+            res.send([result1, result2, result3])
+
+            // const senderEmail = req.query.senederEmail;
+            // const reciverEmail = req.query.reciverEmail;
+            // const filter = {senderEmail: senderEmail, reciverEmail: reciverEmail};
+            // const options = {upsert: true}
+            // const updatedDoc = {
+            //     $set: {
+            //         status: 'connected'
+            //     }
+            // }
+            // const result = await connectionsCollection.updateOne(filter, updatedDoc, options)
+            // res.send(result)
+        })
+
+
+        app.get('/srequested', async(req, res) => {
+            const myEmail = req.query.email;
+            const query1 = {senderEmail: myEmail};
+            const result = await connectionsCollection.find(query1).toArray()
+            res.send(result)
+            // const query2 = {reciverEmail: myEmail}
+            // const result2 = await friendsCollection.find(query2).toArray()
+            // res.send([...result, ...result2])
+        })
+
+        app.get('/reqdeny', async(req,res) => {
+            const id = req.query.id;
+            const query = {_id: ObjectId(id)}
+            const result = await connectionsCollection.deleteOne(query);
             res.send(result)
         })
     }
