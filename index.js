@@ -100,6 +100,7 @@ async function run() {
         const messageCollection = client.db('hello-Talk').collection('messageCollection');
         const termsCollection = client.db('hello-Talk').collection('terms');
         const privacyCollection = client.db('hello-Talk').collection('privacy');
+        const connectionsCollection = client.db('hello-Talk').collection('connection');
 
 
         // CHAT SYSTEM START
@@ -671,7 +672,7 @@ async function run() {
 
         //get the terms value;
         app.get('/terms', async(req, res) => {
-            const result = await privacyCollection.find({}).toArray();
+            const result = await termsCollection.find({}).toArray();
             res.send(result)
         })
 
@@ -679,6 +680,40 @@ async function run() {
         //community pages 
         app.use("/community", routerCommunity)
 
+        //add connection start
+        app.post('/connect', async(req, res) => {
+            const connectBody = req.body;
+            const result = await connectionsCollection.insertOne(connectBody);
+            res.send(result)
+        })
+
+        app.get('/connection', async(req, res)=> {
+            const result = await connectionsCollection.find({}).toArray()
+            res.send(result)
+        })
+
+        //get the freind request
+        app.get('/requested', async(req, res) => {
+            const reciverEmail = req.query.email;
+            const query = {reciverEmail:reciverEmail, status: "pending"}
+            const result = await connectionsCollection.find(query).toArray()
+            res.send(result)
+            
+        })
+
+        app.put('/accepted', async(req, res) => {
+            const senderEmail = req.query.senederEmail;
+            const reciverEmail = req.query.reciverEmail;
+            const filter = {senderEmail: senderEmail, reciverEmail: reciverEmail};
+            const options = {upsert: true}
+            const updatedDoc = {
+                $set: {
+                    status: 'connected'
+                }
+            }
+            const result = await connectionsCollection.updateOne(filter, updatedDoc, options)
+            res.send(result)
+        })
     }
 
     finally {
