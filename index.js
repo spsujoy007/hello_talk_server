@@ -103,6 +103,7 @@ async function run() {
         const privacyCollection = client.db('hello-Talk').collection('privacy');
         const connectionsCollection = client.db('hello-Talk').collection('connection');
         const friendsCollection = client.db('hello-Talk').collection('friends');
+        const appliedTeacherCollection = client.db('hello-Talk').collection('appliedTeacher');
 
 
         // CHAT SYSTEM START
@@ -616,6 +617,31 @@ async function run() {
         app.post('/addteacher', async (req, res) => {
             const teacherBody = req.body;
             const result = await teachersCollection.insertOne(teacherBody)
+            res.send(result)
+
+            //for update the role user to teacher
+            const filter = req.body.email;
+            const options = {upsert: true};
+            const updatedDoc = {
+                $set: {
+                    role: 'teacher'
+                }
+            }
+            const result2 = await userCollection.updateOne(filter, updatedDoc, options)
+            res.send(result2)
+        })
+
+        // apply for a teacher
+        app.post('/applyteacher', async(req, res) => {
+            const teacherBody = req.body;
+            const result = await appliedTeacherCollection.insertOne(teacherBody)
+            res.send(result)
+        })
+
+        //get all the applied teacher list
+        app.get('/appliedtechlist',  async(req, res) => {
+            const query = {}
+            const result = await appliedTeacherCollection.find(query).toArray()
             res.send(result)
         })
 
