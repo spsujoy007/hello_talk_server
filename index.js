@@ -605,10 +605,18 @@ async function run() {
             res.send(teachers)
         })
 
-        //get single teacher
+        //get single teacher data
         app.get('/teacher/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
+            const result = await teachersCollection.findOne(query);
+            res.send(result);
+        });
+
+        // for checking teacher 
+        app.get('/teacher', async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email };
             const result = await teachersCollection.findOne(query);
             res.send(result);
         });
@@ -617,10 +625,10 @@ async function run() {
         app.post('/addteacher', async (req, res) => {
             const teacherBody = req.body;
             const result = await teachersCollection.insertOne(teacherBody)
-            res.send(result)
 
             //for update the role user to teacher
-            const filter = req.body.email;
+            const email = req.body.email;
+            const filter = {email: email}
             const options = {upsert: true};
             const updatedDoc = {
                 $set: {
@@ -628,7 +636,11 @@ async function run() {
                 }
             }
             const result2 = await userCollection.updateOne(filter, updatedDoc, options)
-            res.send(result2)
+
+            //remove the data from applied collection
+            const result3 = await appliedTeacherCollection.deleteOne(filter);
+
+            res.send([result, result2, result3])
         })
 
         // apply for a teacher
@@ -639,9 +651,16 @@ async function run() {
         })
 
         //get all the applied teacher list
-        app.get('/appliedtechlist',  async(req, res) => {
+        app.get('/appliedtechlist', async(req, res) => {
             const query = {}
             const result = await appliedTeacherCollection.find(query).toArray()
+            res.send(result)
+        })
+
+        //get single applied for testing
+        app.get('/myapplied', async(req, res) => {
+            const email = req.query.email;
+            const result = await appliedTeacherCollection.findOne({email: email})
             res.send(result)
         })
 
