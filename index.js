@@ -105,7 +105,7 @@ async function run(){
 
 
         // CHAT SYSTEM START
-        app.post('/send-message', async (req, res) => {
+        app.post('/send-message', verifyJWT, async (req, res) => {
             const data = req.body;
             const currentDate = new Date();
             const msgData = {
@@ -119,7 +119,7 @@ async function run(){
             res.send({ result, msgData });
         })
 
-        app.get('/get-messages/:id/:myId', async (req, res) => {
+        app.get('/get-messages/:id/:myId', verifyJWT,async (req, res) => {
             const id = req.params.id;
             const myId = req.params.myId;
             try {
@@ -562,6 +562,29 @@ async function run(){
 
             const result = await userCollection.updateOne(filter, updatedDoc, options)
             res.send(result)
+        })
+
+        //update gems after unlcoking blogs with gems
+        app.post('/updategem', async (req, res) => {
+            const email = req.query.email;
+            const mygem = req.body;
+            //get the new gems
+            const {mGem} = mygem
+            
+            //find for get the user of previous gems
+            // const getUser = await userCollection.findOne({email: email})
+            // const {gems} =  getUser;
+            
+            const filter = {email: email};
+            const options = {upsert: true};
+            const updatedDoc= {
+                $set: {
+                    gems: mGem
+                }
+            };
+
+            const result = await userCollection.updateOne(filter, updatedDoc, options)
+            res.send({ result, updatedDoc })
         })
 
         //delete an user from database
