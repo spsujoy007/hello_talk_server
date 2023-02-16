@@ -103,6 +103,7 @@ async function run() {
         const privacyCollection = client.db('hello-Talk').collection('privacy');
         const connectionsCollection = client.db('hello-Talk').collection('connection');
         const friendsCollection = client.db('hello-Talk').collection('friends');
+        const appliedTeacherCollection = client.db('hello-Talk').collection('appliedTeacher');
 
 
         // CHAT SYSTEM START
@@ -604,10 +605,18 @@ async function run() {
             res.send(teachers)
         })
 
-        //get single teacher
+        //get single teacher data
         app.get('/teacher/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
+            const result = await teachersCollection.findOne(query);
+            res.send(result);
+        });
+
+        // for checking teacher 
+        app.get('/teacher', async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email };
             const result = await teachersCollection.findOne(query);
             res.send(result);
         });
@@ -616,6 +625,42 @@ async function run() {
         app.post('/addteacher', async (req, res) => {
             const teacherBody = req.body;
             const result = await teachersCollection.insertOne(teacherBody)
+
+            //for update the role user to teacher
+            const email = req.body.email;
+            const filter = {email: email}
+            const options = {upsert: true};
+            const updatedDoc = {
+                $set: {
+                    role: 'teacher'
+                }
+            }
+            const result2 = await userCollection.updateOne(filter, updatedDoc, options)
+
+            //remove the data from applied collection
+            const result3 = await appliedTeacherCollection.deleteOne(filter);
+
+            res.send([result, result2, result3])
+        })
+
+        // apply for a teacher
+        app.post('/applyteacher', async(req, res) => {
+            const teacherBody = req.body;
+            const result = await appliedTeacherCollection.insertOne(teacherBody)
+            res.send(result)
+        })
+
+        //get all the applied teacher list
+        app.get('/appliedtechlist', async(req, res) => {
+            const query = {}
+            const result = await appliedTeacherCollection.find(query).toArray()
+            res.send(result)
+        })
+
+        //get single applied for testing
+        app.get('/myapplied', async(req, res) => {
+            const email = req.query.email;
+            const result = await appliedTeacherCollection.findOne({email: email})
             res.send(result)
         })
 
