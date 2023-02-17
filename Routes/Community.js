@@ -13,13 +13,27 @@ const postlikes = client.db('hello-Talk').collection('postlikes');
 const postcomment = client.db('hello-Talk').collection('postcomment');
 const topAuthors = client.db('hello-Talk').collection('topAuthors');
 const likeOnComment = client.db('hello-Talk').collection('likeOnComment');
+const userCollection = client.db('hello-Talk').collection('userCollection');
 
 
 router.post('/addapost', async (req, res) => {
-    const question = req.body;
-    const result = await communityPostsCollection.insertOne(question);
-    res.send(result)
+    const body = req.body;
+    const email = body.email;
+    const result = await communityPostsCollection.insertOne(body);
+    const getUser = await userCollection.findOne({ email: email })
+    const { gems } = getUser;
+    const filter = { email: email };
+    const options = { upsert: true };
+    const updatedDoc = {
+        $set: {
+            gems: gems + mGem
+        }
+    };
+    const result3 = await userCollection.updateOne(filter, updatedDoc, options)
+    res.send([result, result3])
 });
+
+
 router.get('/communityposts', async (req, res) => {
     const query = {};
     const result = await communityPostsCollection.find(query).toArray();
@@ -91,7 +105,10 @@ router.post('/topAuthors', async (req, res) => {
 
 router.get('/topAuthors', async (req, res) => {
     const query = {}
+    // const users = await userCollection.find(query).toArray()
+    // if(users)
     const communitybody = await topAuthors.find(query).toArray()
+
     res.send(communitybody)
 })
 
@@ -144,6 +161,9 @@ router.delete('/deleteComment/:id', async (req, res) => {
     const result = await postcomment.deleteOne(query);
     res.send(result);
 });
+
+// _______________
+
 
 
 
