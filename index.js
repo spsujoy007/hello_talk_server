@@ -673,6 +673,13 @@ async function run() {
             res.send(result)
         })
 
+        //delete the application of teacher role
+        app.delete('/deleteApply', async(req, res) => {
+            const email = req.query.email;
+            const result = await appliedTeacherCollection.deleteOne({email: email});
+            res.send(result)
+        })
+
         //get all the applied teacher list
         app.get('/appliedtechlist', async(req, res) => {
             const query = {}
