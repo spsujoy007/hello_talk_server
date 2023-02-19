@@ -104,10 +104,11 @@ async function run() {
         const connectionsCollection = client.db('hello-Talk').collection('connection');
         const friendsCollection = client.db('hello-Talk').collection('friends');
         const appliedTeacherCollection = client.db('hello-Talk').collection('appliedTeacher');
+        const liveSessionCollection = client.db('hello-Talk').collection('livesession');
 
 
         // CHAT SYSTEM START
-        app.post('/send-message', verifyJWT, async (req, res) => {
+        app.post('/send-message', async (req, res) => {
             const data = req.body;
             const currentDate = new Date();
             const msgData = {
@@ -121,7 +122,7 @@ async function run() {
             res.send({ result, msgData });
         })
 
-        app.get('/get-messages/:id/:myId', verifyJWT,async (req, res) => {
+        app.get('/get-messages/:id/:myId',async (req, res) => {
             const id = req.params.id;
             const myId = req.params.myId;
             try {
@@ -709,7 +710,6 @@ async function run() {
                 name1,
                 image1,
                 details1,
-                date1,
                 qualification1,
             } = teacherDetail;
             const filter = { _id: ObjectId(id) };
@@ -719,7 +719,6 @@ async function run() {
                     name: name1,
                     image: image1,
                     details: details1,
-                    date: date1,
                     qualification: qualification1
                 }
             }
@@ -828,10 +827,47 @@ async function run() {
             // res.send([...result, ...result2])
         })
 
+        app.get('/myfriends', async(req, res) => {
+            const myEmail = req.query.email;
+            const query = {reciverEmail: myEmail};
+            const result = await friendsCollection.find(query).toArray()
+            res.send(result)
+        })
+
+        //delete friend request
         app.get('/reqdeny', async(req,res) => {
             const id = req.query.id;
             const query = {_id: ObjectId(id)}
             const result = await connectionsCollection.deleteOne(query);
+            res.send(result)
+        });
+
+        // app.get('/')
+
+        //create session start ----//////////////////////////
+        app.post('/makelive', async(req, res) => {
+            const livebody = req.body;
+            const result = await liveSessionCollection.insertOne(livebody);
+            res.send(result)
+        });
+
+        app.get('/mylive', async(req, res) => {
+            const email = req.query.email;
+            const query = {teacher_email: email}
+            const result = await liveSessionCollection.findOne(query)
+            res.send(result)
+        })
+
+        app.delete('/deletelive', async(req, res) => {
+            const email = req.query.email;
+            const query = {teacher_email: email};
+            const result = await liveSessionCollection.deleteOne(query);
+            res.send(result)
+        })
+
+        app.get('/getlives', async(req, res) => {
+            const query = {};
+            const result = await liveSessionCollection.find(query).toArray()
             res.send(result)
         })
     }
