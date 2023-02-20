@@ -85,6 +85,12 @@ router.get('/like', async (req, res) => {
     res.send(result)
 })
 
+router.get('/totallikes', async(req, res) => {
+    const id = req.query.id;
+    const result = await postlikes.find({pid: id}).toArray();
+    res.send(result)
+})
+
 router.delete('/like/:id', async (req, res) => {
     const id = req.params.id;
     const query = { pid: id };
