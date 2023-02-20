@@ -20,8 +20,31 @@ const connectionsCollection = client.db('hello-Talk').collection('connection');
 router.post('/addapost', async (req, res) => {
     const body = req.body;
     const email = body.email;
-    const result = await communityPostsCollection.insertOne(body);
     const getUser = await userCollection.findOne({ email: email })
+    const { gems } = getUser;
+    const filter = { email: email };
+    const options = { upsert: true };
+    const updatedDoc = {
+        $set: {
+            gems: gems + 2
+        }
+    };
+    const result3 = await userCollection.updateOne(filter, updatedDoc, options)
+    const result = await communityPostsCollection.insertOne(body);
+    res.send([result, result3])
+});
+
+
+router.get('/communityposts', async (req, res) => {
+    const query = {};
+    const result = await communityPostsCollection.find(query).sort({ _id: -1 }).toArray();
+    res.send(result)
+});
+
+router.post('/addapost', async (req, res) => {
+    const question = req.body;
+    const result = await communityPostsCollection.insertOne(question);
+    const getUser = await userCollection.findOne({ email: question.email })
     const { gems } = getUser;
     const filter = { email: email };
     const options = { upsert: true };
@@ -32,19 +55,6 @@ router.post('/addapost', async (req, res) => {
     };
     const result3 = await userCollection.updateOne(filter, updatedDoc, options)
     res.send([result, result3])
-});
-
-
-router.get('/communityposts', async (req, res) => {
-    const query = {};
-    const result = await communityPostsCollection.find(query).toArray();
-    res.send(result)
-});
-
-router.post('/addapost', async (req, res) => {
-    const question = req.body;
-    const result = await communityPostsCollection.insertOne(question);
-    res.send(result)
 });
 
 router.post('/postlike', async (req, res) => {
