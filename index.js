@@ -832,7 +832,7 @@ async function run() {
             const query = {reciverEmail: myEmail};
             const result = await friendsCollection.find(query).toArray()
             res.send(result)
-        })
+        });
 
         //delete friend request
         app.get('/reqdeny', async(req,res) => {

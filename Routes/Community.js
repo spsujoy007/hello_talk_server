@@ -22,7 +22,7 @@ router.post('/addapost', async (req, res) => {
 });
 router.get('/communityposts', async (req, res) => {
     const query = {};
-    const result = await communityPostsCollection.find(query).toArray();
+    const result = await communityPostsCollection.find(query).sort({postTime: -1}).toArray();
     res.send(result)
 });
 
