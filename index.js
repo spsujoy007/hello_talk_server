@@ -122,16 +122,16 @@ async function run() {
             res.send({ result, msgData });
         })
 
-        app.get('/get-messages/:id/:myId',async (req, res) => {
+        app.get('/get-messages/:id/:myId', async (req, res) => {
             const id = req.params.id;
             const myId = req.params.myId;
             try {
                 const allMessages = await messageCollection.find({}).toArray();
                 const filtered = allMessages.filter(
-                   (m) => {
-                    return(
-                        (m.senderId === myId && m.recId === id) || (m.senderId === id && m.recId === myId)
-                    )
+                    (m) => {
+                        return (
+                            (m.senderId === myId && m.recId === id) || (m.senderId === id && m.recId === myId)
+                        )
                     }
                 );
                 if (!filtered.length) {
@@ -508,12 +508,12 @@ async function run() {
         })
 
         // set the photo of profile 
-        app.post('/upimage', async(req, res) => {
+        app.post('/upimage', async (req, res) => {
             const image = req.body;
-            const {photoURL} = image;
+            const { photoURL } = image;
             const email = req.query.email;
-            const filter = {email: email}
-            const options = {upsert: true}
+            const filter = { email: email }
+            const options = { upsert: true }
             const updatedDoc = {
                 $set: {
                     photoURL: photoURL
@@ -541,7 +541,7 @@ async function run() {
 
         app.get('/sortusers', async (req, res) => {
             const query = {};
-            const result = await userCollection.find(query).sort({role: "admin"}).toArray();
+            const result = await userCollection.find(query).sort({ role: "admin" }).toArray();
             res.send(result)
         })
 
@@ -595,15 +595,15 @@ async function run() {
             const email = req.query.email;
             const mygem = req.body;
             //get the new gems
-            const {mGem} = mygem
-            
+            const { mGem } = mygem
+
             //find for get the user of previous gems
             // const getUser = await userCollection.findOne({email: email})
             // const {gems} =  getUser;
-            
-            const filter = {email: email};
-            const options = {upsert: true};
-            const updatedDoc= {
+
+            const filter = { email: email };
+            const options = { upsert: true };
+            const updatedDoc = {
                 $set: {
                     gems: mGem
                 }
@@ -652,8 +652,8 @@ async function run() {
 
             //for update the role user to teacher
             const email = req.body.email;
-            const filter = {email: email}
-            const options = {upsert: true};
+            const filter = { email: email }
+            const options = { upsert: true };
             const updatedDoc = {
                 $set: {
                     role: 'teacher'
@@ -668,30 +668,30 @@ async function run() {
         })
 
         // apply for a teacher
-        app.post('/applyteacher', async(req, res) => {
+        app.post('/applyteacher', async (req, res) => {
             const teacherBody = req.body;
             const result = await appliedTeacherCollection.insertOne(teacherBody)
             res.send(result)
         })
 
         //delete the application of teacher role
-        app.delete('/deleteApply', async(req, res) => {
+        app.delete('/deleteApply', async (req, res) => {
             const email = req.query.email;
-            const result = await appliedTeacherCollection.deleteOne({email: email});
+            const result = await appliedTeacherCollection.deleteOne({ email: email });
             res.send(result)
         })
 
         //get all the applied teacher list
-        app.get('/appliedtechlist', async(req, res) => {
+        app.get('/appliedtechlist', async (req, res) => {
             const query = {}
             const result = await appliedTeacherCollection.find(query).toArray()
             res.send(result)
         })
 
         //get single applied for testing
-        app.get('/myapplied', async(req, res) => {
+        app.get('/myapplied', async (req, res) => {
             const email = req.query.email;
-            const result = await appliedTeacherCollection.findOne({email: email})
+            const result = await appliedTeacherCollection.findOne({ email: email })
             res.send(result)
         })
 
@@ -737,27 +737,27 @@ async function run() {
         })
 
         //terms and privacy start ____________________________
-        app.post('/addprivacy', async(req, res) => {
+        app.post('/addprivacy', async (req, res) => {
             const privacybody = req.body;
             const result = await privacyCollection.insertOne(privacybody);
             res.send(result)
         })
 
         //get the terms value;
-        app.get('/privacy', async(req, res) => {
+        app.get('/privacy', async (req, res) => {
             const result = await privacyCollection.find({}).toArray();
             res.send(result)
         })
 
         //terms and privacy start ____________________________
-        app.post('/addterms', async(req, res) => {
+        app.post('/addterms', async (req, res) => {
             const termsBody = req.body;
             const result = await termsCollection.insertOne(termsBody);
             res.send(result)
         })
 
         //get the terms value;
-        app.get('/terms', async(req, res) => {
+        app.get('/terms', async (req, res) => {
             const result = await termsCollection.find({}).toArray();
             res.send(result)
         })
@@ -767,29 +767,29 @@ async function run() {
         app.use("/community", routerCommunity)
 
         //add connection start
-        app.post('/connect', async(req, res) => {
-            const connectBody = req.body;
-            const result = await connectionsCollection.insertOne(connectBody);
-            res.send(result)
-        })
+        // app.post('/connect', async(req, res) => {
+        //     const connectBody = req.body;
+        //     const result = await connectionsCollection.insertOne(connectBody);
+        //     res.send(result)
+        // })
 
-        app.get('/connection', async(req, res)=> {
+        app.get('/connection', async (req, res) => {
             const result = await connectionsCollection.find({}).toArray()
             res.send(result)
         })
 
         //get the freind request
-        app.get('/requested', async(req, res) => {
+        app.get('/requested', async (req, res) => {
             const reciverEmail = req.query.email;
-            const query = {reciverEmail:reciverEmail, status: "pending"}
+            const query = { reciverEmail: reciverEmail, status: "pending" }
             const result = await connectionsCollection.find(query).toArray()
             res.send(result)
         })
 
-        app.post('/accepted', async(req, res) => {
+        app.post('/accepted', async (req, res) => {
             const body = req.body;
             const id = body.id;
-            const query = {_id: ObjectId(id)};
+            const query = { _id: ObjectId(id) };
             const result1 = await connectionsCollection.deleteOne(query);
             const acceptbody = {
                 senderImg: body.senderImg,
@@ -812,42 +812,20 @@ async function run() {
             const result3 = await friendsCollection.insertOne(acceptBody2);
 
             res.send([result1, result2, result3])
-
-            // const senderEmail = req.query.senederEmail;
-            // const reciverEmail = req.query.reciverEmail;
-            // const filter = {senderEmail: senderEmail, reciverEmail: reciverEmail};
-            // const options = {upsert: true}
-            // const updatedDoc = {
-            //     $set: {
-            //         status: 'connected'
-            //     }
-            // }
-            // const result = await connectionsCollection.updateOne(filter, updatedDoc, options)
-            // res.send(result)
         })
 
 
-        app.get('/srequested', async(req, res) => {
+        app.get('/myfriends', async (req, res) => {
             const myEmail = req.query.email;
-            const query1 = {senderEmail: myEmail};
-            const result = await connectionsCollection.find(query1).toArray()
-            res.send(result)
-            // const query2 = {reciverEmail: myEmail}
-            // const result2 = await friendsCollection.find(query2).toArray()
-            // res.send([...result, ...result2])
-        })
-
-        app.get('/myfriends', async(req, res) => {
-            const myEmail = req.query.email;
-            const query = {reciverEmail: myEmail};
+            const query = { reciverEmail: myEmail };
             const result = await friendsCollection.find(query).toArray()
             res.send(result)
         });
 
         //delete friend request
-        app.get('/reqdeny', async(req,res) => {
+        app.get('/reqdeny', async (req, res) => {
             const id = req.query.id;
-            const query = {_id: ObjectId(id)}
+            const query = { _id: ObjectId(id) }
             const result = await connectionsCollection.deleteOne(query);
             res.send(result)
         });
@@ -855,27 +833,27 @@ async function run() {
         // app.get('/')
 
         //create session start ----//////////////////////////
-        app.post('/makelive', async(req, res) => {
+        app.post('/makelive', async (req, res) => {
             const livebody = req.body;
             const result = await liveSessionCollection.insertOne(livebody);
             res.send(result)
         });
 
-        app.get('/mylive', async(req, res) => {
+        app.get('/mylive', async (req, res) => {
             const email = req.query.email;
-            const query = {teacher_email: email}
+            const query = { teacher_email: email }
             const result = await liveSessionCollection.findOne(query)
             res.send(result)
         })
 
-        app.delete('/deletelive', async(req, res) => {
+        app.delete('/deletelive', async (req, res) => {
             const email = req.query.email;
-            const query = {teacher_email: email};
+            const query = { teacher_email: email };
             const result = await liveSessionCollection.deleteOne(query);
             res.send(result)
         })
 
-        app.get('/getlives', async(req, res) => {
+        app.get('/getlives', async (req, res) => {
             const query = {};
             const result = await liveSessionCollection.find(query).toArray()
             res.send(result)

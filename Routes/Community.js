@@ -14,13 +14,37 @@ const postcomment = client.db('hello-Talk').collection('postcomment');
 const topAuthors = client.db('hello-Talk').collection('topAuthors');
 const likeOnComment = client.db('hello-Talk').collection('likeOnComment');
 const userCollection = client.db('hello-Talk').collection('userCollection');
+const connectionsCollection = client.db('hello-Talk').collection('connection');
 
 
 router.post('/addapost', async (req, res) => {
     const body = req.body;
     const email = body.email;
-    const result = await communityPostsCollection.insertOne(body);
     const getUser = await userCollection.findOne({ email: email })
+    const { gems } = getUser;
+    const filter = { email: email };
+    const options = { upsert: true };
+    const updatedDoc = {
+        $set: {
+            gems: gems + 2
+        }
+    };
+    const result3 = await userCollection.updateOne(filter, updatedDoc, options)
+    const result = await communityPostsCollection.insertOne(body);
+    res.send([result, result3])
+});
+
+
+router.get('/communityposts', async (req, res) => {
+    const query = {};
+    const result = await communityPostsCollection.find(query).sort({ _id: -1 }).toArray();
+    res.send(result)
+});
+
+router.post('/addapost', async (req, res) => {
+    const question = req.body;
+    const result = await communityPostsCollection.insertOne(question);
+    const getUser = await userCollection.findOne({ email: question.email })
     const { gems } = getUser;
     const filter = { email: email };
     const options = { upsert: true };
@@ -33,25 +57,15 @@ router.post('/addapost', async (req, res) => {
     res.send([result, result3])
 });
 
-
-router.get('/communityposts', async (req, res) => {
-    const query = {};
-    const result = await communityPostsCollection.find(query).sort({postTime: -1}).toArray();
-    res.send(result)
-});
-
-router.post('/addapost', async (req, res) => {
-    const question = req.body;
-    const result = await communityPostsCollection.insertOne(question);
-    res.send(result)
-});
-
 router.post('/postlike', async (req, res) => {
     const likebody = req.body;
-    const query = { email: likebody.email }
+    const query = {
+        email: likebody.email,
+        pid: likebody.pid
+    }
     const likedata = await postlikes.find(query).toArray()
     // console.log(likedata.length)
-    if (likedata.length) return res.send({ k: "S" })
+    if (likedata.length >= 1) return res.send({ status: "already liked" })
     const result = await postlikes.insertOne(likebody);
     res.send(result)
 })
@@ -85,9 +99,9 @@ router.get('/like', async (req, res) => {
     res.send(result)
 })
 
-router.get('/totallikes', async(req, res) => {
+router.get('/totallikes', async (req, res) => {
     const id = req.query.id;
-    const result = await postlikes.find({pid: id}).toArray();
+    const result = await postlikes.find({ pid: id }).toArray();
     res.send(result)
 })
 
@@ -95,8 +109,8 @@ router.delete('/like/:id', async (req, res) => {
     const id = req.params.id;
     const query = { pid: id };
     console.log(query)
-    // const result = await postlikes.deleteOne(query);
-    // res.send(result);
+    const result = await postlikes.deleteOne(query);
+    res.send(result);
 });
 
 router.post('/topAuthors', async (req, res) => {
@@ -170,8 +184,49 @@ router.delete('/deleteComment/:id', async (req, res) => {
 
 // _______________
 
+// add friend list
 
+router.post('/connect', async (req, res) => {
+    const connectBody = req.body;
+    const query = {
+        senderEmail: connectBody.senderName,
+        reciverEmail: connectBody.reciverEmail
+    }
+    const status = await connectionsCollection.find({ query }).toArray()
+    if (search) {
+        return res.send({ Status: "Already Sent" })
+    }
+    const result = await connectionsCollection.insertOne(connectBody);
+    res.send(result)
+})
 
+router.get('/srequested', async (req, res) => {
+    const sEmail = req.query.email;
+    const rEmail = req.query.remail;
+    const query1 = {
+        senderEmail: sEmail,
+        reciverEmail: rEmail
+    };
+    const result = await connectionsCollection.find(query1).toArray()
+    res.send(result)
+})
+
+router.get('/all', async (req, res) => {
+    // const connectBody = req.body;
+    const result = await connectionsCollection.find({}).toArray();
+    res.send(result)
+})
+
+router.get('/reqestdeny', async (req, res) => {
+    const sEmail = req.query.email;
+    const rEmail = req.query.remail;
+    const query1 = {
+        senderEmail: sEmail,
+        reciverEmail: rEmail
+    };
+    const result = await connectionsCollection.deleteOne(query1);
+    res.send(result)
+});
 
 
 
