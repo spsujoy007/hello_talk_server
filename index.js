@@ -700,7 +700,17 @@ async function run() {
             const id = req.query.id;
             const query = { _id: ObjectId(id) }
             const result = await teachersCollection.deleteOne(query)
-            res.send(result)
+
+            const teacher = await teachersCollection.findOne(query);
+            const filter = {email: teacher.email}
+            const options = {upsert: true}
+            const updatedDoc = {
+                $set:{
+                    role: 'user'
+                }
+            }
+            const result2 = await userCollection.updateOne(filter, updatedDoc, options)
+            res.send([result, result2])
         })
 
         app.post('/updateteacher', async (req, res) => {
