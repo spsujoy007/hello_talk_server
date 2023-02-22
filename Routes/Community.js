@@ -166,13 +166,6 @@ router.delete('/Clike/:id', async (req, res) => {
     res.send(result);
 });
 
-router.delete('/Clike/:id', async (req, res) => {
-    const id = req.params.id;
-    const query = { cid: id };
-    // console.log(query)
-    const result = await likeOnComment.deleteOne(query);
-    res.send(result);
-});
 
 router.delete('/deleteComment/:id', async (req, res) => {
     const id = req.params.id;
@@ -189,15 +182,12 @@ router.delete('/deleteComment/:id', async (req, res) => {
 router.post('/connect', async (req, res) => {
     const connectBody = req.body;
     const query = {
-        senderEmail: connectBody.senderName,
+        senderEmail: connectBody.senderEmail,
         reciverEmail: connectBody.reciverEmail
     }
-
-
     const status = await connectionsCollection.find({ query }).toArray()
-    if (search) {
-        return res.send({ Status: "Already Sent" })
-    }
+
+    if (status.length >= 1) return res.send({ Status: "Already Sent" })
     const result = await connectionsCollection.insertOne(connectBody);
     res.send(result)
 })
