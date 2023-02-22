@@ -702,10 +702,10 @@ async function run() {
             const result = await teachersCollection.deleteOne(query)
 
             const teacher = await teachersCollection.findOne(query);
-            const filter = {email: teacher.email}
-            const options = {upsert: true}
+            const filter = { email: teacher.email }
+            const options = { upsert: true }
             const updatedDoc = {
-                $set:{
+                $set: {
                     role: 'user'
                 }
             }
@@ -765,13 +765,6 @@ async function run() {
 
         //community pages 
         app.use("/community", routerCommunity)
-
-        //add connection start
-        // app.post('/connect', async(req, res) => {
-        //     const connectBody = req.body;
-        //     const result = await connectionsCollection.insertOne(connectBody);
-        //     res.send(result)
-        // })
 
         app.get('/connection', async (req, res) => {
             const result = await connectionsCollection.find({}).toArray()
