@@ -70,6 +70,7 @@ router.post('/postlike', async (req, res) => {
     res.send(result)
 })
 
+
 router.get('/postlike', async (req, res) => {
     const query = {}
     const communitybody = await postlikes.find(query).toArray()
@@ -105,10 +106,14 @@ router.get('/totallikes', async (req, res) => {
     res.send(result)
 })
 
-router.delete('/like/:id', async (req, res) => {
-    const id = req.params.id;
-    const query = { pid: id };
-    console.log(query)
+router.get('/unlike', async (req, res) => {
+    const id = req.query.id;
+    const email = req.query.email
+    const query = {
+        email: email,
+        pid: id
+    };
+    // console.log(query)
     const result = await postlikes.deleteOne(query);
     res.send(result);
 });
@@ -219,6 +224,9 @@ router.get('/reqestdeny', async (req, res) => {
     const result = await connectionsCollection.deleteOne(query1);
     res.send(result)
 });
+
+
+
 
 
 
