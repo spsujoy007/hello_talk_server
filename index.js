@@ -330,6 +330,29 @@ async function run() {
             res.send(result)
         });
 
+        //update gems after unlcoking blogs with gems
+        app.post('/updategem', async (req, res) => {
+            const email = req.query.email;
+            const updatedeGem = req.body;
+            //get the new gems
+            const { gems } = updatedeGem
+
+            //find for get the user of previous gems
+            // const getUser = await userCollection.findOne({email: email})
+            // const {gems} =  getUser;
+
+            const filter = { email: email };
+            const options = { upsert: true };
+            const updatedDoc = {
+                $set: {
+                    gems: gems
+                }
+            };
+
+            const result = await userCollection.updateOne(filter, updatedDoc, options)
+            res.send({ result, updatedDoc })
+        })
+
         //notify email save api
         app.post('/notifyblog', async (req, res) => {
             const email = req.body;
