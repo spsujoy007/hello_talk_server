@@ -84,6 +84,7 @@ function verifyJWT(req, res, next) {
 
 
 async function run() {
+    //our all collections for all oparetion
     try {
         const coursesCollection = client.db('hello-Talk').collection('coursesCollection');
         const paymentsCollection = client.db('hello-Talk').collection('paymentsCollection');
@@ -122,6 +123,7 @@ async function run() {
             res.send({ result, msgData });
         })
 
+        //get message indivisuali
         app.get('/get-messages/:id/:myId', async (req, res) => {
             const id = req.params.id;
             const myId = req.params.myId;
@@ -360,6 +362,7 @@ async function run() {
             res.send(result)
         })
 
+        //notify when a admin create a new blog
         app.get('/notifyblog', async (req, res) => {
             const result = await notifyEmailCollection.find({}).toArray()
             res.send(result)
@@ -443,6 +446,7 @@ async function run() {
             res.send(result)
         })
 
+        //get single level
         app.get('/levels/:level', async (req, res) => {
             const level = req.params.level;
             const query = { level: level };
@@ -562,6 +566,7 @@ async function run() {
             res.send(result)
         })
 
+        //check admins
         app.get('/sortusers', async (req, res) => {
             const query = {};
             const result = await userCollection.find(query).sort({ role: "admin" }).toArray();
@@ -736,6 +741,7 @@ async function run() {
             res.send([result, result2])
         })
 
+        //Chage the role to teacher when admin accept
         app.post('/updateteacher', async (req, res) => {
             const id = req.query.id;
             const teacherDetail = req.body;
@@ -802,6 +808,7 @@ async function run() {
             res.send(result)
         })
 
+        //accept friend request api
         app.post('/accepted', async (req, res) => {
             const body = req.body;
             const id = body.id;
@@ -830,7 +837,7 @@ async function run() {
             res.send([result1, result2, result3])
         })
 
-
+        //check my friends
         app.get('/myfriends', async (req, res) => {
             const myEmail = req.query.email;
             const query = { reciverEmail: myEmail };
@@ -846,8 +853,6 @@ async function run() {
             res.send(result)
         });
 
-        // app.get('/')
-
         //create session start ----//////////////////////////
         app.post('/makelive', async (req, res) => {
             const livebody = req.body;
@@ -855,6 +860,7 @@ async function run() {
             res.send(result)
         });
 
+        //check my live is active or not
         app.get('/mylive', async (req, res) => {
             const email = req.query.email;
             const query = { teacher_email: email }
@@ -862,6 +868,7 @@ async function run() {
             res.send(result)
         })
 
+        //delete live api function
         app.delete('/deletelive', async (req, res) => {
             const email = req.query.email;
             const query = { teacher_email: email };
@@ -869,6 +876,7 @@ async function run() {
             res.send(result)
         })
 
+        //get all lives for help support page. students can see this
         app.get('/getlives', async (req, res) => {
             const query = {};
             const result = await liveSessionCollection.find(query).toArray()
@@ -884,6 +892,7 @@ run().catch(err => {
     console.error(err);
 })
 
+//this is the root api for our server
 app.get('/', (req, res) => {
     res.send(`
   <div style="text-align: center; font-family: arial; padding: 0 30px">
